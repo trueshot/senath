@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Load 33316 — BOL Email Delivery Report</title>
+<style>
+:root{
+  --paper:#FBFBF9; --card:#FFFFFF; --ink:#1D2420; --muted:#5B6660; --line:#E3E6E1;
+  --accent:#33587A; --accent-soft:#EAF0F5;
+  --good:#2E7D4F; --good-soft:#EAF4EE;
+  --warn:#A66E14; --warn-soft:#F8F1E2;
+  --crit:#B23A31; --crit-soft:#F9ECEA;
+  --mono:ui-monospace,"Cascadia Mono",Consolas,monospace;
+}
+body{background:var(--paper);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;margin:0;padding:40px 20px 72px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:36px}
+header{border-bottom:2px solid var(--ink);padding-bottom:20px}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+h1{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:clamp(26px,4.5vw,34px);line-height:1.15;margin:0 0 14px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 28px;font-size:13.5px;color:var(--muted)}
+.meta b{color:var(--ink);font-weight:600}
+h2{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 14px;border-bottom:1px solid var(--line);padding-bottom:8px}
+p{margin:0 0 12px;max-width:68ch}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:16px 18px}
+.card .who{font-weight:650;margin:0 0 2px}
+.card .addr{font-family:var(--mono);font-size:12.5px;color:var(--muted);word-break:break-all;margin:0 0 12px}
+.pill{display:inline-block;font-size:11.5px;font-weight:650;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:99px;margin:0 0 10px}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.crit{background:var(--crit-soft);color:var(--crit)}
+.card .note{font-size:13.5px;color:var(--muted);margin:0}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px 14px 8px 0;border-bottom:1px solid var(--ink)}
+td{padding:9px 14px 9px 0;border-bottom:1px solid var(--line);vertical-align:top}
+.t{font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.m{font-family:var(--mono);font-size:13px;word-break:break-all}
+.ev{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;padding:14px 18px;margin:0 0 12px}
+.ev .src{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);font-weight:650;margin:0 0 6px}
+.ev p{margin:0;font-size:14.5px}
+.callout{background:var(--warn-soft);border:1px solid var(--warn);border-radius:6px;padding:16px 18px}
+.callout p{font-size:14.5px}
+.callout p:last-child{margin:0}
+ol{margin:0;padding-left:22px;max-width:70ch}
+ol li{margin:0 0 10px}
+footer{font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+@media print{body{padding:0}.card,.ev{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Willis Produce Sales · Document Delivery Investigation</p>
+  <h1>Load 33316 — Bill of Lading Email Delivery Report</h1>
+  <div class="meta">
+    <span>Sent by <b>Morgan Willis</b></span>
+    <span>Sent <b>July 7, 2026 · 10:57 AM EDT</b></span>
+    <span>Dataset <b>WILLIS</b></span>
+    <span>Prepared <b>July 13, 2026</b> by senath</span>
+  </div>
+</header>
+
+<section>
+  <h2>Verdict — three emails, three different answers</h2>
+  <div class="cards">
+    <div class="card">
+      <span class="pill good">Accepted by their server</span>
+      <p class="who">H. Trock</p>
+      <p class="addr">htrock@freshouse.com</p>
+      <p class="note">AWS recorded delivery to Fresh House's mail filter (Mimecast) with no bounce. If unseen, it is sitting in quarantine or junk on their side.</p>
+    </div>
+    <div class="card">
+      <span class="pill good">Accepted by their server</span>
+      <p class="who">J. Hurd</p>
+      <p class="addr">JHURD@FRESHOUSE.COM</p>
+      <p class="note">Same evidence: handed to Mimecast, no bounce recorded. Their filter, not our send, is where it stopped.</p>
+    </div>
+    <div class="card">
+      <span class="pill crit">Bounced — wrong domain</span>
+      <p class="who">Robert Dunning</p>
+      <p class="addr">RDUNNING@FRESHHOUSE.COM</p>
+      <p class="note">His address on file uses <b>freshHouse.com (double&nbsp;H)</b> — a different, unrelated domain. His colleagues are <b>@freshouse.com</b>. One bounce was recorded in exactly this minute.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Exact timeline (July 7, 2026)</h2>
+  <div class="tbl"><table>
+    <tr><th>Time (EDT)</th><th>Time (UTC)</th><th>Event</th><th>Recipient</th></tr>
+    <tr><td class="t">10:57:57</td><td class="t">14:57:57</td><td>BOL #1 PDF generated &amp; emailed</td><td class="m">htrock@freshouse.com</td></tr>
+    <tr><td class="t">10:57:58</td><td class="t">14:57:58</td><td>BOL #2 PDF generated &amp; emailed</td><td class="m">JHURD@FRESHOUSE.COM</td></tr>
+    <tr><td class="t">10:58:00</td><td class="t">14:58:00</td><td>BOL #3 PDF generated &amp; emailed</td><td class="m">RDUNNING@FRESHHOUSE.COM</td></tr>
+    <tr><td class="t">10:57–58</td><td class="t">14:57–58</td><td><b>AWS, same minute:</b> 3 sends · 2 deliveries · <b>1 bounce</b> · 0 rejects</td><td>—</td></tr>
+  </table></div>
+  <p style="font-size:13.5px;color:var(--muted);margin-top:10px">All three emails were sent from <span class="m">documents@produceflow.com</span> (Reply-To: willisproducesales@gmail.com), each with a working document link.</p>
+</section>
+
+<section>
+  <h2>Evidence</h2>
+  <div class="ev"><p class="src">Send pipeline (Hawk server, prnthist)</p>
+    <p>Each BOL has its PDF, the send record, and the exact recipient captured at send time. The system completed all three sends — this rules out the “it never went out” theory.</p></div>
+  <div class="ev"><p class="src">AWS CloudWatch, per-minute</p>
+    <p>The 10:57 EDT minute shows exactly <b>3 sends, 2 deliveries, 1 bounce</b> — matching these three emails. “Delivery” means the recipient's own mail server accepted the message.</p></div>
+  <div class="ev"><p class="src">AWS SES statistics, full day</p>
+    <p>Across July 7: <b>zero rejects, zero complaints</b>. The only bounces of the day occurred in this window. Our sending reputation and setup were healthy.</p></div>
+  <div class="ev"><p class="src">DNS — the two domains</p>
+    <p><span class="m">freshouse.com</span> (single H) is Fresh House — mail handled by Mimecast. <span class="m">freshhouse.com</span> (double H) is an unrelated domain on Microsoft 365. Robert Dunning's contact record points at the wrong one.</p></div>
+</section>
+
+<section>
+  <h2>Why “we didn't get it” — reconciled</h2>
+  <p><b>Robert Dunning</b> genuinely never got it: his email address on file is misspelled at the domain (<span class="m">freshhouse.com</span> instead of <span class="m">freshouse.com</span>), and the recorded bounce lines up with his send.</p>
+  <p><b>H. Trock and J. Hurd's</b> copies were accepted by Fresh House's Mimecast filter. Anything after that point — quarantine, junk foldering — happens inside Fresh House's system and is invisible to us and to them until they check. A produceflow.com sender with a Gmail reply-to is exactly the profile corporate filters like to quarantine.</p>
+  <div class="callout">
+    <p><b>One caveat, stated plainly:</b> AWS confirms 2 deliveries + 1 bounce for these three emails as a group, but does not retroactively name which address bounced — per-message event logging was never switched on, and bounce notices are auto-forwarded to <span class="m">documents@produceflow.com</span>, a mailbox that doesn't exist. The domain evidence makes Dunning's the bounce beyond reasonable doubt.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Actions</h2>
+  <ol>
+    <li><b>Fix Robert Dunning's contact record</b> to <span class="m">rdunning@freshouse.com</span> (confirm with Fresh House) and resend BOL #3.</li>
+    <li><b>Ask Fresh House IT</b> to search Mimecast quarantine for mail from <span class="m">documents@produceflow.com</span> on July 7 ~10:58 AM EDT, release it, and allowlist the sender.</li>
+    <li><b>Instrument our sending</b> so the next dispute takes one lookup, not an investigation: turn on per-message SES event logging, and point bounce notices at a real mailbox. (Setup identified and ready — senath.)</li>
+  </ol>
+</section>
+
+<footer>Sources: Hawk prnthist send records (load 33316), AWS SES account statistics, AWS CloudWatch AWS/SES per-minute metrics, SES suppression list, DNS MX records. Times verified against server and AWS clocks (±1 min). — senath gen-10</footer>
+</div>
+</body>
+</html>

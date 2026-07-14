@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>senath — Portal-Membrane MEP</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0a0e17; color: #c8cdd5; }
+.header { background: #131924; padding: 16px 24px; border-bottom: 1px solid #1e2a3a; display: flex; align-items: center; gap: 16px; }
+.header h1 { font-size: 18px; color: #e2e8f0; font-weight: 600; }
+.header .subtitle { font-size: 13px; color: #64748b; }
+.tabs { display: flex; gap: 0; background: #131924; border-bottom: 2px solid #1e2a3a; padding: 0 24px; }
+.tab { padding: 10px 20px; cursor: pointer; color: #64748b; font-size: 13px; font-weight: 500; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.15s; }
+.tab:hover { color: #94a3b8; }
+.tab.active { color: #60a5fa; border-bottom-color: #60a5fa; }
+.content { padding: 24px; max-width: 1180px; }
+.panel { display: none; }
+.panel.active { display: block; }
+.section { margin-bottom: 28px; }
+.section h2 { font-size: 15px; color: #60a5fa; margin-bottom: 12px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+.section h3 { font-size: 14px; color: #94a3b8; margin: 18px 0 8px; font-weight: 600; }
+.section p { font-size: 13px; color: #94a3b8; line-height: 1.6; margin-bottom: 10px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 12px; }
+th { text-align: left; padding: 8px 12px; background: #1a2332; color: #94a3b8; font-weight: 600; border-bottom: 1px solid #1e2a3a; }
+td { padding: 8px 12px; border-bottom: 1px solid #141c28; vertical-align: top; }
+tr:hover td { background: #141c28; }
+.mono { font-family: 'Cascadia Code', 'Fira Code', monospace; font-size: 12px; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 600; }
+.tag-utera   { background: #1e3a5f; color: #60a5fa; }
+.tag-app     { background: #2d1f3d; color: #a78bfa; }
+.tag-chimayo { background: #1a332b; color: #34d399; }
+.tag-prey    { background: #3a2a18; color: #fbbf24; }
+.tag-api     { background: #3b1028; color: #f472b6; }
+.tag-done    { background: #1a332b; color: #34d399; }
+.tag-gap     { background: #3b1111; color: #f87171; }
+.tag-running { background: #1e3a5f; color: #60a5fa; }
+pre { background: #0f1623; border: 1px solid #1e2a3a; border-radius: 6px; padding: 14px; font-size: 12px; font-family: 'Cascadia Code', monospace; overflow-x: auto; line-height: 1.6; color: #e2e8f0; }
+.callout { background: #131924; border-left: 3px solid #f472b6; padding: 14px 18px; border-radius: 0 4px 4px 0; margin: 14px 0; }
+.callout.green { border-left-color: #34d399; }
+.callout.amber { border-left-color: #fbbf24; }
+.callout h3 { color: #e2e8f0; margin: 0 0 6px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.4px; }
+.callout p  { font-size: 13px; color: #c8cdd5; line-height: 1.6; margin: 4px 0; }
+.input-row { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+.input-row label { font-size: 12px; color: #64748b; align-self: center; }
+input[type=text] { padding: 8px 12px; background: #131924; border: 1px solid #1e2a3a; border-radius: 4px; color: #e2e8f0; font-size: 13px; font-family: 'Cascadia Code', monospace; min-width: 160px; }
+input[type=text]:focus { outline: none; border-color: #60a5fa; }
+button { padding: 8px 16px; background: #1e3a5f; color: #60a5fa; border: 1px solid #2a4a6f; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500; }
+button:hover { background: #2a4a6f; }
+.stat-row { display: flex; gap: 12px; flex-wrap: wrap; margin: 14px 0; }
+.stat { background: #131924; border: 1px solid #1e2a3a; border-radius: 6px; padding: 10px 14px; min-width: 130px; }
+.stat .val { font-size: 16px; font-weight: 700; color: #e2e8f0; font-family: 'Cascadia Code', monospace; }
+.stat .lbl { font-size: 11px; color: #64748b; margin-top: 2px; }
+.exists-yes { color: #34d399; font-weight: 600; }
+.exists-no  { color: #f87171; font-weight: 600; }
+.path { font-family: 'Cascadia Code', monospace; font-size: 12px; color: #94a3b8; }
+.diagram { font-family: 'Cascadia Code', monospace; font-size: 12px; line-height: 1.6; color: #c8cdd5; white-space: pre; background: #0f1623; border: 1px solid #1e2a3a; border-radius: 6px; padding: 16px; overflow-x: auto; }
+.diagram .label { color: #60a5fa; }
+.diagram .arrow { color: #f472b6; }
+.diagram .note { color: #64748b; font-style: italic; }
+.empty { color: #475569; font-style: italic; }
+.decision-card { background: #131924; border: 1px solid #1e2a3a; border-radius: 8px; padding: 18px 20px; margin-bottom: 20px; }
+.decision-card.blocking { border-left: 3px solid #f87171; }
+.decision-card h3.dtitle { font-size: 16px; color: #e2e8f0; margin: 0 0 4px; font-weight: 600; }
+.decision-card .dquestion { font-size: 13px; color: #c8cdd5; line-height: 1.6; margin: 8px 0; }
+.decision-card .dwhy { font-size: 12px; color: #94a3b8; line-height: 1.6; margin: 8px 0; }
+.opt { border: 1px solid #1e2a3a; border-radius: 6px; padding: 12px 14px; margin: 10px 0; background: #0f1623; }
+.opt.recommended { border-color: #34d399; background: #0f1d18; }
+.opt .ohead { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.opt .oval { font-family: 'Cascadia Code', monospace; font-size: 13px; color: #e2e8f0; font-weight: 600; }
+.opt .oexample { font-family: 'Cascadia Code', monospace; font-size: 11px; color: #60a5fa; margin: 4px 0; }
+.opt .oplain { font-size: 12px; color: #c8cdd5; margin: 4px 0; }
+.opt ul { margin: 4px 0 4px 18px; font-size: 12px; line-height: 1.5; }
+.opt .pros li { color: #6ee7b7; }
+.opt .cons li { color: #fca5a5; }
+.rec-badge { background: #1a332b; color: #34d399; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 600; }
+.rec-box { background: #0f1d18; border-left: 3px solid #34d399; padding: 12px 16px; border-radius: 0 4px 4px 0; margin-top: 12px; }
+.rec-box .rlabel { color: #34d399; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
+.rec-box .rval { font-family: 'Cascadia Code', monospace; color: #e2e8f0; font-weight: 600; font-size: 14px; margin: 4px 0; }
+.rec-box .rreason { font-size: 12px; color: #c8cdd5; line-height: 1.6; }
+.dstatus { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 3px; }
+.dstatus.block { background: #3b1111; color: #f87171; }
+.dstatus.noblock { background: #1a2332; color: #94a3b8; }
+.cascade { font-size: 11px; color: #64748b; margin: 6px 0 0 16px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>senath</h1>
+  <span class="subtitle">Portal-Membrane &mdash; how documents cross from one CORP into another via uTERA</span>
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-tab="decisions">&#9733; Decisions For You</div>
+  <div class="tab"        data-tab="channels">Three Channels</div>
+  <div class="tab"        data-tab="model">The Membrane Model</div>
+  <div class="tab"        data-tab="pipeline">Provisioning Pipeline</div>
+  <div class="tab"        data-tab="live">Live Portal State</div>
+</div>
+
+<div class="content">
+
+<!-- =================================================================== -->
+<!-- TAB 0: DECISIONS FOR YOU                                             -->
+<!-- =================================================================== -->
+<div id="decisions" class="panel active">
+  <div class="section">
+    <h2>Decisions That Get This Operational</h2>
+    <p id="decisionsIntro" class="empty">Loading...</p>
+  </div>
+  <div id="decisionsList"></div>
+  <div class="section">
+    <h2>Once You Decide &mdash; the path to a working send</h2>
+    <ol id="afterDecide" style="font-size:13px;color:#94a3b8;line-height:1.9;padding-left:20px"></ol>
+  </div>
+</div>
+
+<!-- =================================================================== -->
+<!-- TAB: THREE CHANNELS                                                  -->
+<!-- =================================================================== -->
+<div id="channels" class="panel">
+  <div class="section">
+    <h2 id="chTitle">Three Channels</h2>
+    <p id="chSubtitle" class="empty">Loading...</p>
+    <p id="chStory" style="font-size:13px;color:#cbd5e1;line-height:1.8;border-left:3px solid #60a5fa;padding-left:14px;margin-top:14px"></p>
+  </div>
+  <div id="chChannels"></div>
+  <div class="section" id="chKeystone" style="border:1px solid #b4791f;border-radius:8px"></div>
+  <div class="section">
+    <h2>Per-Specialist Asks &mdash; vet your part</h2>
+    <table id="chSpecTable"><thead><tr><th style="width:180px">Who</th><th>What this model asks of you</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="section">
+    <h2>Open Questions</h2>
+    <div id="chOpenQ"></div>
+  </div>
+  <div class="section">
+    <h2>See Also</h2>
+    <ul id="chSeeAlso" style="font-size:12px;color:#94a3b8;line-height:1.9;padding-left:20px"></ul>
+  </div>
+</div>
+
+<!-- =================================================================== -->
+<!-- TAB 1: THE MEMBRANE MODEL                                            -->
+<!-- =================================================================== -->
+<div id="model" class="panel">
+
+  <div class="section">
+    <h2>The Idea in One Sentence</h2>
+    <p id="tagline" class="empty">Loading...</p>
+  </div>
+
+  <div class="section">
+    <h2>Outgoing vs Incoming &mdash; the two sides of every membrane</h2>
+    <table id="sidesTable">
+      <thead><tr><th>Side</th><th>Owns</th><th>Purpose</th><th>Example (willis &rarr; farmwey)</th><th>Controls</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <p style="margin-top:8px"><strong>Why pair them.</strong> Putting <span class="mono">outgoing/</span> and <span class="mono">incoming/</span>
+       under one <span class="mono">portals/</span> root makes the membrane <em>visible as structure</em>. You read
+       a CORP's portals/ and immediately see every counterparty and the direction of each flow.</p>
+  </div>
+
+  <div class="section">
+    <h2>The Two-Layer Split <span style="font-size:11px;color:#64748b">&mdash; the key insight</span></h2>
+    <div class="callout green">
+      <h3 id="splitHeadline" class="empty">Loading...</h3>
+      <p id="splitReasoning" class="empty"></p>
+      <p style="margin-top:8px"><strong style="color:#34d399">Consequence:</strong> <span id="splitConsequence" class="empty"></span></p>
+    </div>
+    <table>
+      <thead><tr><th>Needs an inode record (DDB inode3)</th><th>No inode record (plain mkdir on canopylake)</th></tr></thead>
+      <tbody><tr><td><div id="needsInode"></div></td><td><div id="noInode"></div></td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>dirArray prefixes &mdash; what shows up where</h2>
+    <table id="prefixTable">
+      <thead><tr><th>Prefix</th><th>Means</th><th>In a portal membrane</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <p>So when you look at willdev CORP's Drive C <span class="mono">.inode.json</span>, you see
+       <span class="mono">&lt;dir&gt;server</span>, <span class="mono">&lt;dir&gt;service</span>, the skeleton dbf/app/prg
+       <span class="mono">&lt;link&gt;</span>s &mdash; but <strong>not</strong> <span class="mono">&lt;dir&gt;produceflow</span>.
+       That's because produceflow/ is a plain filesystem directory and was never registered. The only portal entries
+       that show up in dirArray are the <span class="mono">&lt;link&gt;</span>s under <span class="mono">incoming/</span>.</p>
+  </div>
+
+  <div class="section">
+    <h2>Canonical Example &mdash; willis &harr; farmwey</h2>
+    <pre id="canonicalExample" class="empty">Loading...</pre>
+  </div>
+
+  <div class="section">
+    <h2>Four Access Tiers</h2>
+    <p>The folder is the same in all tiers. What differs is whether a membrane has been constructed over it.</p>
+    <table id="tiersTable">
+      <thead><tr><th>Tier</th><th>Name</th><th>Known at send time</th><th>Mechanism</th><th>Authority</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <p>The progression is what gen-5 settled with George: <strong>store first &rarr; anonymous access via token &rarr;
+       individual PER LINK when they register &rarr; CORP LINK when the company incorporates &rarr; per-PER links retire.</strong>
+       The folder never moves. Only the LINK targets change.</p>
+  </div>
+
+</div>
+
+<!-- =================================================================== -->
+<!-- TAB 2: PROVISIONING PIPELINE                                         -->
+<!-- =================================================================== -->
+<div id="pipeline" class="panel">
+
+  <div class="section">
+    <h2>The Pipeline at a Glance</h2>
+    <div class="diagram">
+<span class="label">[application]</span>   sendEmail.js on Hawk (W2K3)
+              <span class="arrow">|</span>  fs.writeFileSync('D:\clients\willdev\portal\farmwey\doc.pdf')
+              <span class="arrow">v</span>
+<span class="label">[prey-side]</span>     NTFS junction  D:\clients\willdev\portal\farmwey  -->  X:\inode3\9x\9xn6xk6a\local_c\server\produceflow\portals\outgoing\farmwey
+              <span class="arrow">|</span>
+              <span class="arrow">v</span>
+<span class="label">[network]</span>      SMB through bridge:  X: = \\172.31.24.120\canopylake  (force-user=smbuser)
+              <span class="arrow">|</span>
+              <span class="arrow">v</span>
+<span class="label">[storage]</span>      canopylake (S3 Files) &mdash; bytes land in the plain outgoing/ directory
+              <span class="arrow">|</span>
+              <span class="note">chimayo materializes inode-recorded entries (.inode.json) from DDB stream</span>
+              <span class="arrow">v</span>
+<span class="label">[inode]</span>        farmwey's incoming/willis  is a &lt;link&gt; inode with ~_~ epath  -->  willis's outgoing/farmwey
+              <span class="note">authority check fires at ~_~ (traversecity boundary-check.js)</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Specialists &mdash; who builds what</h2>
+    <table id="stepsTable">
+      <thead><tr><th>#</th><th>Step</th><th>Owner</th><th>Tool / Command</th><th>Status</th><th>Layer</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>The Corrected Gap</h2>
+    <div class="callout">
+      <h3>What I thought was missing (gen-5)</h3>
+      <p id="thoughtMissing" class="empty">Loading...</p>
+    </div>
+    <div class="callout green">
+      <h3>What is actually missing</h3>
+      <p id="actuallyMissing" class="empty"></p>
+    </div>
+    <div class="callout amber">
+      <h3>Why the change</h3>
+      <p id="whyChange" class="empty"></p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>The Rule for sendEmail.js</h2>
+    <p id="senathRule" class="empty">Loading...</p>
+  </div>
+
+</div>
+
+<!-- =================================================================== -->
+<!-- TAB 3: LIVE PORTAL STATE                                             -->
+<!-- =================================================================== -->
+<div id="live" class="panel">
+
+  <div class="section">
+    <h2>Check the Portal State for a CORP / Recipient Pair</h2>
+    <div class="input-row">
+      <label>CORP (grantor):</label>
+      <input type="text" id="liveCorp" value="willdev" />
+      <label>Recipient:</label>
+      <input type="text" id="liveRecipient" value="farmwey" />
+      <button onclick="loadLive()">Check</button>
+    </div>
+    <p>Reads canopylake via chimayo (<span class="mono">/read-json</span> on port 7719) and S3 listObjects.
+       Shows which directories actually exist on disk vs which need provisioning, with the exact prey-side
+       junction and sendEmail.js write path that would result.</p>
+    <div id="liveResult"></div>
+  </div>
+
+</div>
+
+</div>
+
+<script>
+function showTab(name) {
+  document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.tab').forEach(function(t)   { t.classList.remove('active'); });
+  document.getElementById(name).classList.add('active');
+  document.querySelector('.tab[data-tab="' + name + '"]').classList.add('active');
+}
+document.querySelectorAll('.tab').forEach(function(t) {
+  t.addEventListener('click', function() { showTab(t.getAttribute('data-tab')); });
+});
+
+function esc(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// ---------- TAB 0: decisions ----------
+async function loadDecisions() {
+  var d = await (await fetch('api/decisions')).json();
+  document.getElementById('decisionsIntro').textContent = d.intro;
+  document.getElementById('decisionsIntro').classList.remove('empty');
+
+  var list = document.getElementById('decisionsList');
+  d.decisions.forEach(function(dec) {
+    var card = document.createElement('div');
+    card.className = 'decision-card' + (dec.blocking ? ' blocking' : '');
+
+    var resolved = /resolved/i.test(dec.status);
+    var statusCls = resolved ? '' : (dec.blocking ? 'block' : 'noblock');
+    var statusStyle = resolved ? ' style="background:#1a332b;color:#34d399"' : '';
+    var html = '<div style="display:flex;align-items:center;gap:12px;justify-content:space-between">'
+             + '<h3 class="dtitle">' + esc(dec.title) + '</h3>'
+             + '<span class="dstatus ' + statusCls + '"' + statusStyle + '>' + esc(dec.status) + '</span></div>'
+             + (dec.resolved ? '<div class="rec-box" style="margin:10px 0"><div class="rlabel">Decided</div><div class="rreason">' + esc(dec.resolved) + '</div></div>' : '')
+             + '<p class="dquestion"><strong>Q:</strong> ' + esc(dec.question) + '</p>'
+             + (dec.vetUpdate ? '<div style="background:#0d1a14;border-left:3px solid #34d399;padding:10px 14px;border-radius:4px;font-size:13px;color:#cbd5e1;line-height:1.7;margin:10px 0"><strong style="color:#34d399">Specialist vet (2026-06-10):</strong> ' + esc(dec.vetUpdate) + '</div>' : '')
+             + '<p class="dwhy"><strong>Why it matters:</strong> ' + esc(dec.whyItMatters) + '</p>';
+
+    if (dec.cascades) {
+      html += '<p class="dwhy" style="margin-bottom:2px"><strong>This identifier flows into:</strong></p>';
+      dec.cascades.forEach(function(c) { html += '<div class="cascade">&bull; ' + esc(c) + '</div>'; });
+    }
+
+    dec.options.forEach(function(o) {
+      html += '<div class="opt' + (o.recommended ? ' recommended' : '') + '">'
+            + '<div class="ohead"><span class="oval">' + esc(o.value) + '</span>'
+            + (o.recommended ? '<span class="rec-badge">RECOMMENDED</span>' : '') + '</div>'
+            + '<div class="oexample">' + esc(o.example) + '</div>'
+            + '<div class="oplain">' + esc(o.plain) + '</div>'
+            + '<ul class="pros">' + o.pros.map(function(p){ return '<li>+ ' + esc(p) + '</li>'; }).join('') + '</ul>'
+            + '<ul class="cons">' + o.cons.map(function(c){ return '<li>&minus; ' + esc(c) + '</li>'; }).join('') + '</ul>'
+            + '</div>';
+    });
+
+    html += '<div class="rec-box"><div class="rlabel">senath recommends</div>'
+          + '<div class="rval">' + esc(dec.senathRecommendation) + '</div>'
+          + '<div class="rreason">' + esc(dec.recommendationReason) + '</div>'
+          + '<div class="rreason" style="margin-top:8px;color:#94a3b8"><strong>If you change it later:</strong> ' + esc(dec.ifYouChange) + '</div>'
+          + '</div>';
+
+    card.innerHTML = html;
+    list.appendChild(card);
+  });
+
+  var after = document.getElementById('afterDecide');
+  d.afterYouDecide.forEach(function(step) {
+    var li = document.createElement('li');
+    li.textContent = step.replace(/^\d+\.\s*/, '');
+    after.appendChild(li);
+  });
+}
+
+// ---------- TAB 1: model ----------
+async function loadModel() {
+  var m = await (await fetch('api/model')).json();
+  document.getElementById('tagline').textContent = m.tagline;
+  document.getElementById('tagline').classList.remove('empty');
+
+  var sidesBody = document.querySelector('#sidesTable tbody');
+  m.sides.forEach(function(s) {
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td class="mono">' + esc(s.side) + '</td>'
+                 + '<td>' + esc(s.owns) + '</td>'
+                 + '<td>' + esc(s.purpose) + '</td>'
+                 + '<td class="path">' + esc(s.example) + '</td>'
+                 + '<td>' + esc(s.controls) + '</td>';
+    sidesBody.appendChild(tr);
+  });
+
+  document.getElementById('splitHeadline').textContent    = m.twoLayerSplit.headline;
+  document.getElementById('splitReasoning').textContent   = m.twoLayerSplit.reasoning;
+  document.getElementById('splitConsequence').textContent = m.twoLayerSplit.consequence;
+  ['splitHeadline','splitReasoning','splitConsequence'].forEach(function(id) {
+    document.getElementById(id).classList.remove('empty');
+  });
+
+  var needsHtml = m.twoLayerSplit.needsInodeRecord.map(function(e) {
+    return '<div style="margin-bottom:6px"><strong>' + esc(e.what) + '</strong><br><span style="font-size:11px;color:#64748b">' + esc(e.why) + '</span></div>';
+  }).join('');
+  var noHtml = m.twoLayerSplit.noInodeRecord.map(function(e) {
+    return '<div style="margin-bottom:6px"><strong class="mono">' + esc(e.what) + '</strong><br><span style="font-size:11px;color:#64748b">' + esc(e.why) + '</span></div>';
+  }).join('');
+  document.getElementById('needsInode').innerHTML = needsHtml;
+  document.getElementById('noInode').innerHTML    = noHtml;
+
+  var prefixBody = document.querySelector('#prefixTable tbody');
+  m.dirArrayPrefixes.forEach(function(p) {
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td class="mono">' + esc(p.prefix) + '</td>'
+                 + '<td>' + esc(p.means) + '</td>'
+                 + '<td>' + esc(p.forPortal) + '</td>';
+    prefixBody.appendChild(tr);
+  });
+
+  var ex = m.canonicalExample;
+  var exText = 'GRANTOR:    ' + ex.grantor
+             + '\nRECIPIENT:  ' + ex.recipient
+             + '\nDIRECTION:  ' + ex.direction
+             + '\n\nwillis (CORP) side:'
+             + '\n  outgoing:  ' + ex.willisSide.outgoing
+             + '\n  incoming:  ' + ex.willisSide.incoming
+             + '\n\nfarmwey (CORP) side:'
+             + '\n  outgoing:  ' + ex.farmweySide.outgoing
+             + '\n  incoming:  ' + ex.farmweySide.incoming
+             + '\n\nNote: ' + ex.note;
+  document.getElementById('canonicalExample').textContent = exText;
+  document.getElementById('canonicalExample').classList.remove('empty');
+
+  var tiersBody = document.querySelector('#tiersTable tbody');
+  m.accessTiers.forEach(function(t) {
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + t.tier + '</td>'
+                 + '<td><strong>' + esc(t.name) + '</strong></td>'
+                 + '<td>' + esc(t.knownAtSend) + '</td>'
+                 + '<td>' + esc(t.mechanism) + '</td>'
+                 + '<td>' + esc(t.authority) + '</td>';
+    tiersBody.appendChild(tr);
+  });
+}
+
+// ---------- TAB 2: pipeline ----------
+function statusTag(s) {
+  if (/^done|^live/i.test(s)) return '<span class="tag tag-done">' + esc(s) + '</span>';
+  if (/^DOES NOT EXIST|NOT BUILT/.test(s)) return '<span class="tag tag-gap">' + esc(s) + '</span>';
+  if (/running|verified/i.test(s)) return '<span class="tag tag-running">' + esc(s) + '</span>';
+  return esc(s);
+}
+function layerTag(l) {
+  var cls = { inode: 'tag-utera', plain: 'tag-app', materialize: 'tag-chimayo', prey: 'tag-prey', api: 'tag-api', application: 'tag-app' }[l] || 'tag-utera';
+  return '<span class="tag ' + cls + '">' + esc(l) + '</span>';
+}
+async function loadPipeline() {
+  var p = await (await fetch('api/pipeline')).json();
+  var body = document.querySelector('#stepsTable tbody');
+  p.steps.forEach(function(s) {
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + s.n + '</td>'
+                 + '<td><strong>' + esc(s.what) + '</strong><br><span style="font-size:11px;color:#64748b">' + esc(s.artifact) + '</span></td>'
+                 + '<td>' + esc(s.owner) + '</td>'
+                 + '<td class="mono" style="font-size:11px">' + esc(s.tool) + '</td>'
+                 + '<td>' + statusTag(s.status) + '</td>'
+                 + '<td>' + layerTag(s.layer) + '</td>';
+    body.appendChild(tr);
+  });
+  document.getElementById('thoughtMissing').textContent  = p.correctedGap.whatIThoughtWasMissing;
+  document.getElementById('actuallyMissing').textContent = p.correctedGap.whatIsActuallyMissing;
+  document.getElementById('whyChange').textContent       = p.correctedGap.whyTheChange;
+  document.getElementById('senathRule').textContent      = p.rule;
+  ['thoughtMissing','actuallyMissing','whyChange','senathRule'].forEach(function(id) {
+    document.getElementById(id).classList.remove('empty');
+  });
+}
+
+// ---------- TAB 3: live ----------
+async function loadLive() {
+  var corp = document.getElementById('liveCorp').value.trim() || 'willdev';
+  var recipient = document.getElementById('liveRecipient').value.trim() || 'farmwey';
+  var el = document.getElementById('liveResult');
+  el.innerHTML = '<span class="empty">Reading canopylake via chimayo + S3...</span>';
+  try {
+    var d = await (await fetch('api/portal-state?corp=' + encodeURIComponent(corp) + '&recipient=' + encodeURIComponent(recipient))).json();
+    if (!d.ok) { el.innerHTML = '<span class="empty">' + esc(d.error) + '</span>'; return; }
+
+    var html = '<div class="stat-row">'
+             + '<div class="stat"><div class="val">' + esc(d.coords.prostan8) + '</div><div class="lbl">' + esc(d.corp) + ' prostan8</div></div>'
+             + '<div class="stat"><div class="val">' + esc(d.coords.shard)    + '</div><div class="lbl">shard</div></div>'
+             + '<div class="stat"><div class="val">' + esc(d.recipient)       + '</div><div class="lbl">recipient</div></div>'
+             + '<div class="stat"><div class="val">' + d.portalListing.length + '</div><div class="lbl">objects under portals/</div></div>'
+             + '</div>';
+
+    var rows = [
+      ['local_c/.inode.json',          d.state.localC_inode],
+      ['server/.inode.json',           d.state.server_inode],
+      ['produceflow/  (plain dir)',    d.state.produceflow_dir],
+      ['portals/  (plain dir)',        d.state.portals_dir],
+      ['outgoing/' + recipient + '/  (plain dir)', d.state.outgoing_dir],
+      ['incoming/' + recipient + '/  (&lt;link&gt; inode)', d.state.incoming_link]
+    ];
+    html += '<h3 style="font-size:14px;color:#94a3b8;margin:16px 0 8px">Per-Entry State</h3>';
+    html += '<table><thead><tr><th>Entry</th><th>Exists?</th><th>Layer</th><th>Details</th></tr></thead><tbody>';
+    rows.forEach(function(r) {
+      var entry = r[0]; var st = r[1] || {};
+      var cls = st.exists ? 'exists-yes' : 'exists-no';
+      var detail = '';
+      if (st.value)     detail = '<pre style="margin:4px 0;font-size:10px">' + esc(JSON.stringify(st.value, null, 2)) + '</pre>';
+      if (st.inodeJson) detail += '<pre style="margin:4px 0;font-size:10px">' + esc(JSON.stringify(st.inodeJson, null, 2)) + '</pre>';
+      if (st.linkJson)  detail += '<pre style="margin:4px 0;font-size:10px">' + esc(JSON.stringify(st.linkJson, null, 2))  + '</pre>';
+      html += '<tr><td class="mono">' + entry + '</td>'
+            + '<td class="' + cls + '">' + (st.exists ? 'YES' : 'NO') + '</td>'
+            + '<td>' + esc(st.layer || (st.value ? 'inode' : '')) + '</td>'
+            + '<td>' + (detail || '<span class="empty">-</span>') + '</td></tr>';
+    });
+    html += '</tbody></table>';
+
+    html += '<h3 style="font-size:14px;color:#94a3b8;margin:16px 0 8px">Resulting Paths</h3>';
+    html += '<table>';
+    html += '<tr><td>canopylake outgoing</td><td class="path">' + esc(d.paths.outgoing) + '</td></tr>';
+    html += '<tr><td>canopylake incoming (&lt;link&gt;)</td><td class="path">' + esc(d.paths.incoming) + '</td></tr>';
+    html += '<tr><td>prey-side junction (would be)</td><td class="path">' + esc(d.preyJunctionWouldBe) + '</td></tr>';
+    html += '<tr><td>sendEmail.js writes</td><td class="path">' + esc(d.sendEmailWouldWrite) + '</td></tr>';
+    html += '</table>';
+
+    var verdictColor = /fully provisioned/i.test(d.verdict) ? 'green' : 'amber';
+    html += '<div class="callout ' + verdictColor + '" style="margin-top:18px"><h3>Verdict</h3><p>' + esc(d.verdict) + '</p></div>';
+
+    if (d.portalListing.length > 0) {
+      html += '<h3 style="font-size:14px;color:#94a3b8;margin:16px 0 8px">Objects under portals/ (max 500)</h3>';
+      html += '<pre style="font-size:10px;max-height:300px;overflow:auto">' + esc(d.portalListing.join('\n')) + '</pre>';
+    }
+
+    el.innerHTML = html;
+  } catch (e) {
+    el.innerHTML = '<span class="empty">Error: ' + esc(e.message) + '</span>';
+  }
+}
+
+// init
+// ---------- TAB: three channels ----------
+async function loadChannels() {
+  var c = await (await fetch('api/three-channels')).json();
+  document.getElementById('chTitle').textContent = c.title;
+  var sub = document.getElementById('chSubtitle');
+  sub.textContent = c.subtitle;
+  sub.classList.remove('empty');
+  document.getElementById('chStory').textContent = c.story;
+
+  var wrap = document.getElementById('chChannels');
+  c.channels.forEach(function(ch) {
+    var card = document.createElement('div');
+    card.className = 'section';
+    var html = '<div style="display:flex;align-items:baseline;gap:12px">'
+             + '<span style="font-size:26px;font-weight:700;color:#60a5fa">' + ch.n + '</span>'
+             + '<h2 style="margin:0">' + esc(ch.name) + '</h2>'
+             + '<span style="color:#94a3b8;font-size:13px;font-style:italic">' + esc(ch.tagline) + '</span></div>'
+             + '<table style="margin-top:12px">'
+             + '<tr><td style="width:110px;color:#64748b;font-weight:600;vertical-align:top">What</td><td>' + esc(ch.what) + '</td></tr>'
+             + '<tr><td style="color:#64748b;font-weight:600;vertical-align:top">Compute</td><td>' + esc(ch.compute) + '</td></tr>'
+             + '<tr><td style="color:#64748b;font-weight:600;vertical-align:top">Authorization</td><td style="color:#fbbf24">' + esc(ch.authz) + '</td></tr>'
+             + '<tr><td style="color:#64748b;font-weight:600;vertical-align:top">Storage</td><td>' + esc(ch.storage) + '</td></tr>'
+             + '</table>'
+             + '<div style="background:#0d1420;border-left:3px solid #34d399;padding:10px 14px;border-radius:4px;font-size:13px;color:#cbd5e1;line-height:1.7"><strong style="color:#34d399">Key insight:</strong> ' + esc(ch.keyInsight) + '</div>';
+    card.innerHTML = html;
+    wrap.appendChild(card);
+  });
+
+  var k = c.keystone;
+  document.getElementById('chKeystone').innerHTML =
+      '<h2 style="color:#fbbf24">' + esc(k.title) + '</h2>'
+    + '<p style="font-size:13px;line-height:1.8;color:#e2e8f0">' + esc(k.body) + '</p>'
+    + '<p style="font-size:13px;line-height:1.8;color:#cbd5e1"><strong style="color:#34d399">Why it closes cleanly:</strong> ' + esc(k.theCloser) + '</p>'
+    + '<p style="font-size:13px;line-height:1.8;color:#f87171"><strong>Warning:</strong> ' + esc(k.warning) + '</p>'
+    + '<p style="font-size:13px;line-height:1.8;color:#fbbf24;background:#1a1408;padding:10px 14px;border-radius:4px"><strong>Grain:</strong> ' + esc(k.grain) + '</p>';
+
+  var tbody = document.querySelector('#chSpecTable tbody');
+  c.perSpecialist.forEach(function(s) {
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td class="mono" style="color:#60a5fa;vertical-align:top">' + esc(s.who) + '</td><td>' + esc(s.ask) + '</td>';
+    tbody.appendChild(tr);
+  });
+
+  if (c.vetStatus) {
+    var vs = document.createElement('div');
+    vs.className = 'section';
+    vs.style.cssText = 'border:1px solid #1f7a4d;border-radius:8px';
+    vs.innerHTML = '<h2 style="color:#34d399">Vet Status</h2><p style="font-size:13px;line-height:1.8;color:#cbd5e1">' + esc(c.vetStatus) + '</p>';
+    document.getElementById('chKeystone').after(vs);
+  }
+
+  var oq = document.getElementById('chOpenQ');
+  c.openQuestions.forEach(function(q, i) {
+    var div = document.createElement('div');
+    div.style.cssText = 'margin-bottom:12px;padding:10px 14px;background:#131924;border-radius:6px';
+    div.innerHTML = '<div style="font-weight:600;color:#e2e8f0;font-size:13px">' + (i + 1) + '. ' + esc(q.q) + '</div>'
+                  + '<div style="font-size:12px;color:#94a3b8;line-height:1.7;margin-top:4px">' + esc(q.detail) + '</div>';
+    oq.appendChild(div);
+  });
+
+  var sa = document.getElementById('chSeeAlso');
+  c.seeAlso.forEach(function(s) {
+    var li = document.createElement('li');
+    li.textContent = s;
+    sa.appendChild(li);
+  });
+}
+
+loadDecisions();
+loadChannels();
+loadModel();
+loadPipeline();
+document.getElementById('liveCorp').addEventListener('keydown', function(e) { if (e.key === 'Enter') loadLive(); });
+document.getElementById('liveRecipient').addEventListener('keydown', function(e) { if (e.key === 'Enter') loadLive(); });
+</script>
+</body>
+</html>

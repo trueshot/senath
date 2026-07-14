@@ -1,46 +1,47 @@
-# Identity Check — checkEmailRegisteredToPER()
+(unverified) Identity Check
 
-_Author: senath gen-0 — 2026-02-21_
+The identity check determines whether a recipient is a known ProduceStandards.org partner or a new user. This is THE fork that decides the entire email experience.
 
-## Purpose
-
-Determines if an email recipient is already a registered ProduceStandards.org partner before deciding which email template to send.
-
-## API Call
+## The Call
 
 ```
 POST http://172.31.28.199:3006/api/check-prostan-partner
-Content-Type: application/json
-Body: { "email": "<recipient-email>" }
+Body: { "email": "user@company.com" }
 ```
 
-Server: **Monkey** (172.31.28.199:3006) running verifyApi.js
+- Host: **Monkey** (172.31.28.199:3006) — NOT Hawk (172.31.31.8)
+- Handler: verifyApi.js on Monkey
+- Function: `checkEmailRegisteredToPER()` at line ~306 in sendEmail.js
 
-## Response Handling
+## Response
 
-| Response | isRegistered | Template |
-|----------|-------------|----------|
-| `isPartner: true` | true | Verified Partner badge |
-| `isPartner: false` | false | Upgrade CTA |
-| API error | false | Upgrade CTA (graceful fallback) |
-| Parse error | false | Upgrade CTA (graceful fallback) |
-| Network error | false | Upgrade CTA (graceful fallback) |
-| Timeout (5s) | false | Upgrade CTA (graceful fallback) |
+```json
+{
+  "success": true,
+  "isPartner": true,
+  "prostan8": "u_abc123_CORP",
+  "displayName": "John Smith",
+  "partnerLevel": "verified"
+}
+```
 
-Design principle: **Never block email delivery.** Any failure defaults to showing the upgrade prompt.
+## The Fork
 
-## Migration History
+| Result | `showUpgradePrompt` | Email Template | Goal |
+|--------|---------------------|----------------|------|
+| New user (or error) | `true` | Green upgrade CTA | Acquire identity |
+| Existing partner | `false` | Blue verified badge | Reinforce loyalty |
 
-- **Before Dec 2025**: Called Hawk server (172.31.31.8:3006) — wrong server
-- **Dec 2025 fix**: Changed hostname to Monkey (172.31.28.199:3006)
-- **Cause**: verifyApi.js migrated from Hawk to Monkey but sendEmail.js wasn't updated
-- **Verification**: ALB routing confirms producestandards.org → Monkey3006 target group
+## Fail-Open Design
 
-## Partner Data Returned
+ANY error from the identity check defaults to `{ isRegistered: false }` — meaning "show upgrade prompt." This is intentional:
 
-When `isPartner: true`:
-- `prostan8` — ProduceStandards.org 8-char ID (e.g., "u_34445950")
-- `displayName` — Partner's display name
-- `partnerLevel` — Authority level
+- Never block email delivery for an identity check failure
+- Worst case: an existing partner sees the upgrade CTA (harmless)
+- Network errors, timeouts, API bugs all fail safely
 
-Used by `createConditionalHtmlEmail()` to personalize the verified partner badge.
+## Why This Matters
+
+This isn't just "which template." This is the decision point for the SeedDrop acquisition funnel. Every new-user email is an identity acquisition opportunity. Every partner email reinforces network stickiness.
+
+— senath gen-2

@@ -1,0 +1,604 @@
+{
+  "version": 1,
+  "billetId": "senathSendEmail",
+  "holder": "senath",
+  "createdAt": "2026-02-21T13:07:38.426Z",
+  "grades": {
+    "1st": {
+      "status": "awaiting_review",
+      "items": [
+        {
+          "id": "1st.1",
+          "desc": "List every path in your billet `owns:` section",
+          "status": "self_reported",
+          "gradedBy": null,
+          "gradedAt": "2026-02-21T13:07:58.556Z",
+          "notes": null
+        },
+        {
+          "id": "1st.2",
+          "desc": "Read each file completely",
+          "status": "self_reported",
+          "gradedBy": null,
+          "gradedAt": "2026-02-21T13:07:58.556Z",
+          "notes": null
+        },
+        {
+          "id": "1st.3",
+          "desc": "For each file, write a one-sentence description of what it actually contains",
+          "status": "self_reported",
+          "gradedBy": null,
+          "gradedAt": "2026-02-21T13:07:58.556Z",
+          "notes": null
+        },
+        {
+          "id": "1st.4",
+          "desc": "Update your billet owns section with `path:` + `desc:` format (per BILLET-SPEC.md)",
+          "status": "self_reported",
+          "gradedBy": null,
+          "gradedAt": "2026-02-21T13:07:58.556Z",
+          "notes": null
+        },
+        {
+          "id": "1st.5",
+          "desc": "If a listed file doesn't exist, remove it from owns or create it honestly",
+          "status": "self_reported",
+          "gradedBy": null,
+          "gradedAt": "2026-02-21T13:07:58.556Z",
+          "notes": null
+        }
+      ]
+    },
+    "2nd": {
+      "status": "awaiting_review",
+      "items": [
+        {
+          "id": "2nd.1",
+          "desc": "Read tool standards: `node c:/clients/tool/readme.js`",
+          "status": "self_reported",
+          "gradedBy": null,
+          "gradedAt": "2026-02-21T13:09:22.893Z",
+          "notes": null
+        },
+        {
+          "id": "2nd.2",
+          "desc": "Create or update readme.js in your repo root",
+          "status": "self_reported",
+          "gradedBy": null,
+          "gradedAt": "2026-02-21T13:09:22.893Z",
+          "notes": null
+        },
+        {
+          "id": "2nd.3",
+          "desc": "Default output (no args) tells someone what this repo is and how to use it",
+          "status": "self_reported",
+          "gradedBy": null,
+          "gradedAt": "2026-02-21T13:09:22.893Z",
+          "notes": null
+        },
+        {
+          "id": "2nd.4",
+          "desc": "--json returns structured data about your tools and docs",
+          "status": "self_reported",
+          "gradedBy": null,
+          "gradedAt": "2026-02-21T13:09:22.893Z",
+          "notes": null
+        },
+        {
+          "id": "2nd.5",
+          "desc": "Test it yourself — does output make sense to someone who knows nothing?",
+          "status": "self_reported",
+          "gradedBy": null,
+          "gradedAt": "2026-02-21T13:09:22.893Z",
+          "notes": null
+        }
+      ]
+    },
+    "3rd": {
+      "status": "awaiting_review",
+      "items": [
+        {
+          "id": "3rd.1",
+          "desc": "Create `library/` folder in your repo root",
+          "status": "self_reported",
+          "gradedBy": null,
+          "gradedAt": "2026-02-21T13:13:45.594Z",
+          "notes": null
+        },
+        {
+          "id": "3rd.2",
+          "desc": "Move curated documents to library/ root (these are \"live\" — you know and stand behind them)",
+          "status": "self_reported",
+          "gradedBy": null,
+          "gradedAt": "2026-02-21T13:13:45.594Z",
+          "notes": null
+        },
+        {
+          "id": "3rd.3",
+          "desc": "Create `library/archive/` for deprecated documents",
+          "status": "self_reported",
+          "gradedBy": null,
+          "gradedAt": "2026-02-21T13:13:45.594Z",
+          "notes": null
+        },
+        {
+          "id": "3rd.4",
+          "desc": "Create `library/research/` for working notes and investigations",
+          "status": "self_reported",
+          "gradedBy": null,
+          "gradedAt": "2026-02-21T13:13:45.594Z",
+          "notes": null
+        },
+        {
+          "id": "3rd.5",
+          "desc": "Create `library/INDEX.md` listing each live document with one-line description",
+          "status": "self_reported",
+          "gradedBy": null,
+          "gradedAt": "2026-02-21T13:13:45.594Z",
+          "notes": null
+        },
+        {
+          "id": "3rd.6",
+          "desc": "Update readme.js to surface library contents",
+          "status": "self_reported",
+          "gradedBy": null,
+          "gradedAt": "2026-02-21T13:13:45.594Z",
+          "notes": null
+        }
+      ]
+    },
+    "4th": {
+      "status": "awaiting_review",
+      "items": [
+        {
+          "id": "4th.1",
+          "desc": "Run `git status` in your repo — is it clean?",
+          "status": "self_reported",
+          "gradedBy": null,
+          "gradedAt": "2026-02-21T13:14:23.906Z",
+          "notes": null
+        },
+        {
+          "id": "4th.2",
+          "desc": "Commit any uncommitted work with meaningful commit messages",
+          "status": "self_reported",
+          "gradedBy": null,
+          "gradedAt": "2026-02-21T13:14:23.906Z",
+          "notes": null
+        },
+        {
+          "id": "4th.3",
+          "desc": "Verify repo is pushed to remote (if applicable)",
+          "status": "self_reported",
+          "gradedBy": null,
+          "gradedAt": "2026-02-21T13:14:23.906Z",
+          "notes": null
+        },
+        {
+          "id": "4th.4",
+          "desc": "No sensitive data in repo (credentials, keys, etc.)",
+          "status": "self_reported",
+          "gradedBy": null,
+          "gradedAt": "2026-02-21T13:14:23.906Z",
+          "notes": null
+        },
+        {
+          "id": "4th.5",
+          "desc": ".gitignore exists and excludes appropriate files",
+          "status": "self_reported",
+          "gradedBy": null,
+          "gradedAt": "2026-02-21T13:14:23.906Z",
+          "notes": null
+        }
+      ]
+    },
+    "5th": {
+      "status": "awaiting_review",
+      "items": [
+        {
+          "id": "5th.1",
+          "desc": "List all tools in your repo",
+          "status": "self_reported",
+          "gradedBy": null,
+          "gradedAt": "2026-02-21T13:14:54.898Z",
+          "notes": null
+        },
+        {
+          "id": "5th.2",
+          "desc": "Verify TOOLS.md documents each tool with Purpose, Location, Usage",
+          "status": "self_reported",
+          "gradedBy": null,
+          "gradedAt": "2026-02-21T13:14:54.898Z",
+          "notes": null
+        },
+        {
+          "id": "5th.3",
+          "desc": "Run each tool — does it work?",
+          "status": "self_reported",
+          "gradedBy": null,
+          "gradedAt": "2026-02-21T13:14:54.898Z",
+          "notes": null
+        },
+        {
+          "id": "5th.4",
+          "desc": "Each tool has --help that produces useful output",
+          "status": "self_reported",
+          "gradedBy": null,
+          "gradedAt": "2026-02-21T13:14:54.898Z",
+          "notes": null
+        },
+        {
+          "id": "5th.5",
+          "desc": "Each tool has header comment with author and date",
+          "status": "self_reported",
+          "gradedBy": null,
+          "gradedAt": "2026-02-21T13:14:54.898Z",
+          "notes": null
+        },
+        {
+          "id": "5th.6",
+          "desc": "Fix any broken tools or remove them from TOOLS.md",
+          "status": "self_reported",
+          "gradedBy": null,
+          "gradedAt": "2026-02-21T13:14:54.898Z",
+          "notes": null
+        }
+      ]
+    },
+    "6th": {
+      "status": "pending",
+      "items": [
+        {
+          "id": "6th.1",
+          "desc": "Pick a neighbor corporal (someone whose domain touches yours)",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "6th.2",
+          "desc": "Have them run your readme.js and give written feedback",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "6th.3",
+          "desc": "Have them try one of your tools — does it work for them?",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "6th.4",
+          "desc": "Collect their feedback in `library/reviews/` as a dated note",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "6th.5",
+          "desc": "Fix any issues they found",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "6th.6",
+          "desc": "Neighbor confirms fixes in a follow-up review",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        }
+      ]
+    },
+    "7th": {
+      "status": "pending",
+      "items": [
+        {
+          "id": "7th.1",
+          "desc": "List your marshal posse (who your teacher leads)",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "7th.2",
+          "desc": "For each posse member, write one sentence about what they do",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "7th.3",
+          "desc": "Identify 3 corporals outside your posse whose work affects yours",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "7th.4",
+          "desc": "Document routing: when someone needs X, it goes to Y (for your domain)",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "7th.5",
+          "desc": "Add a `neighbors.md` to your library/ with this information",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "7th.6",
+          "desc": "Verify your marshaledBy field is accurate in billet.yaml",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        }
+      ]
+    },
+    "8th": {
+      "status": "pending",
+      "items": [
+        {
+          "id": "8th.1",
+          "desc": "Read your nouns.json (if it exists; create one if not)",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "8th.2",
+          "desc": "For each noun: did you verify it exists in real code/data, or did you guess?",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "8th.3",
+          "desc": "Remove any noun you cannot point to in actual source files",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "8th.4",
+          "desc": "For remaining nouns, add a `source` field with file path or evidence",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "8th.5",
+          "desc": "Cross-reference with neighbors — do they use the same terms?",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "8th.6",
+          "desc": "Write `nouns-audit.md` documenting what you removed and why",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        }
+      ]
+    },
+    "9th": {
+      "status": "pending",
+      "items": [
+        {
+          "id": "9th.1",
+          "desc": "Write `ONBOARDING.md` in your repo root",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "9th.2",
+          "desc": "Document: what this domain does, what tools exist, how to run them",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "9th.3",
+          "desc": "Document: what state exists (files, databases, configs) and where",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "9th.4",
+          "desc": "Document: common tasks and how to do them step-by-step",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "9th.5",
+          "desc": "Document: known issues, gotchas, and tribal knowledge",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "9th.6",
+          "desc": "Have a neighbor read ONBOARDING.md cold — can they understand your domain?",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        }
+      ]
+    },
+    "10th": {
+      "status": "pending",
+      "items": [
+        {
+          "id": "10th.1",
+          "desc": "Write `HEURISTICS.md` in your library/",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "10th.2",
+          "desc": "Document at least 5 decision rules for your domain",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "10th.3",
+          "desc": "Each heuristic: situation, options, what you choose and why",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "10th.4",
+          "desc": "Include at least 2 edge cases where the obvious answer is wrong",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "10th.5",
+          "desc": "Include at least 1 case where you escalate to teacher or George",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "10th.6",
+          "desc": "Format: \"When X happens, do Y because Z. Exception: if W, do V instead.\"",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        }
+      ]
+    },
+    "11th": {
+      "status": "pending",
+      "items": [
+        {
+          "id": "11th.1",
+          "desc": "Receive assignment from teacher (marshal)",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "11th.2",
+          "desc": "Complete the assigned project (scope varies by domain)",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "11th.3",
+          "desc": "Document what you built/learned in library/",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "11th.4",
+          "desc": "Present results to your posse (written summary via DM)",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "11th.5",
+          "desc": "Teacher confirms satisfactory completion",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        }
+      ]
+    },
+    "12th": {
+      "status": "pending",
+      "items": [
+        {
+          "id": "12th.1",
+          "desc": "Propose a capstone project to your teacher",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "12th.2",
+          "desc": "Project must: solve a real problem, use your domain expertise, produce lasting value",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "12th.3",
+          "desc": "Execute the project independently",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "12th.4",
+          "desc": "Write a capstone report in library/CAPSTONE.md",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        },
+        {
+          "id": "12th.5",
+          "desc": "Capstone report includes: problem, approach, result, what you'd do differently",
+          "status": "pending",
+          "gradedBy": null,
+          "gradedAt": null,
+          "notes": null
+        }
+      ]
+    }
+  }
+}
