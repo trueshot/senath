@@ -174,6 +174,66 @@ Q1 (include NO_JSON print-only?) and Q3 (which doc types?) — they change
 WHICH docs get written. Contract + tooling are ready; the go-decision is
 George's.
 
+=== THE BLUE TEST — EXACT INVOCATION (senath gen-10, VERIFIED 2026-07-22) ===
+
+This was the open unknown blocking the whole scope call. It is now solved.
+portland's --facet-blue-test defines blue/beige; it does NOT give the wire
+format. I got it by reading D:\clients\prostan\emailList.php line 12 on Hawk:
+
+  $parts = explode("---", $QUERY_STRING);
+  $command = 'al '.$parts[0].' '.$parts[1]." ".$parts[2].' "'.$parts[3].'"';
+
+So the query string is POSITIONAL, delimited by ---, NOT named params:
+
+  curl -u george:matt \
+   "http://n2ag.com/prostan/emailList.php?{dataset}---{load}---{abc}---{routingTable}"
+
+  REAL WORKING CALL (returned Ingles's whole contact list):
+  curl -u george:matt \
+   "http://n2ag.com/prostan/emailList.php?willis---32610---A---A~INGLES"
+
+  -> thisComp.push({...ID_NO:"INGLES",ID_NAME:"Ingles Markets"...pulp:[...]})  = BLUE
+  -> thoseComp.push({...})                                                      = BEIGE
+  Emails are in the pulp[] arrays (EMAIL:"bburke@ingles-markets.com" etc).
+
+  Passing ?id_no=INGLES DOES NOT WORK — it yields "Undefined offset 1,2,3" and
+  al falls back to a default company. That wrong answer LOOKS like a real one.
+
+THE TEST: is the doc's recipient email in thisComp? YES=blue, NO=beige.
+
+WHAT THIS MEANS FOR SCOPE (the Q1 answer, now evidence-based):
+  MODERN + MINIMAL-LEGACY docs have a recipient -> blue-testable -> backfillable.
+  PRINT-ONLY (NO_JSON) docs have NO RECIPIENT -> the blue test is a test ON the
+  recipient, so they CANNOT be proven blue -> quarantine, never surface.
+  My gen-9 lean ("include print-only") is therefore WRONG and is retracted.
+
+=== HARTEE EVIDENCE — ONGOING GAP, NOT JUST BACKLOG (2026-07-22) ===
+
+portland asked whether a live channel is still bypassing the membrane. Verified:
+  outgoing/HARTEE newest = 20260628_wwillis_xlq_32719_bol_1   (frozen 6/28)
+  outgoing/FARMWE newest = 20260715_wwillis_xlq_33313_invoice_1 (current)
+  Only HARTEE and FARMWE match hart|teet|farmwe — NO variant company folder.
+So HARTEE's post-6/28 docs are not misfiled under another code; they never reach
+copyPdfToCanopylake at all. Backfilling history once will NOT fix it — HARTEE
+drifts stale again. Almost certainly print-only/legacy sends. STILL NEEDED to
+finish portland's ask: HARTEE's recent LOAD NUMBERS (out-box can't supply them —
+that IS the gap). Get them from abc->ordhead where owner id_no=HARTEE, then
+load-history.js classifies channel per doc in one shot.
+
+=== CANOPYLAKE PATH — READ THIS BEFORE LOOKING (cost me several dead ends) ===
+
+  C:\canopylake ON GEORG IS A PARTIAL SYNC — inode3 exists but local_c/server
+  is EMPTY. Do not conclude the out-box is missing.
+  THE REAL DATA IS ON THE BRIDGE:
+  //15.30.60.44/canopylake/inode3/82/82vlsz7s/local_c/server/produceflow/portals/outgoing/<CO>/
+  (82vlsz7s = the willis corp prostan8, from portal-config.json)
+  SMB: listing company folder NAMES is fast; per-folder stat/`ls -t` across all
+  of them TIMES OUT (>2min). List names, then target one company folder.
+
+=== STATE AS OF 2026-07-22 ===
+  BACKFILL IS STILL HELD by George. Nothing has been written to any portal.
+  Blue-test mechanism: SOLVED (above). Scope call Q1/Q3: STILL GEORGE'S.
+
 === SEE ALSO ===
   senath:--facet-portal-membrane     out-box structure, apron convention, UNC rule
   senath:--facet-three-channels      the binding (access layer)

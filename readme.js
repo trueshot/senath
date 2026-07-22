@@ -36,7 +36,9 @@ var facetMap = {
   '--facet-doc-delivery-failures': { file: 'doc-delivery-failures.md', desc: 'Triage map for "document email doesn\'t work" — 413, base64 inlining, image URLs, PDF gen chain' },
   '--facet-three-channels':    { file: 'three-channels.md',    desc: 'Estate / membrane / application-portal — how a SeedDrop entity touches the network (George 2026-06-10)' },
   '--facet-portal-wiring':     { file: 'portal-wiring.md',     desc: 'How a recipient gets wired to the out-box — two kinds of LINK, per-person prereq, option 1 (inode link) vs option 2 (read folder)' },
-  '--facet-legacy-portal-backfill': { file: 'legacy-portal-backfill.md', desc: 'Including legacy/print docs in the portal — emails.csv index, 3 legacy states, htm-consignee company recovery, tools in tools/, backfill plan (senath gen-9)' }
+  '--facet-legacy-portal-backfill': { file: 'legacy-portal-backfill.md', desc: 'Including legacy/print docs in the portal — emails.csv index, 3 legacy states, EXACT blue-test invocation, HARTEE ongoing-gap evidence (senath gen-10)' },
+  '--facet-email-tracking':    { file: 'email-tracking.md',    desc: 'Per-message SES delivery log (LIVE 2026-07-14) — CloudWatch, tags, email-lookup.js, what it honestly claims, AWS gotchas' },
+  '--facet-pdf-attach':        { file: 'pdf-attach.md',        desc: 'Per-customer PDF attachment (LIVE 2026-07-16) — email-options.json switch, obj.attachPdf interface, multipart/mixed build' }
 };
 
 var facetNames = Object.keys(facetMap);
