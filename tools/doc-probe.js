@@ -42,19 +42,23 @@ function consignee(htm) {
 var out = rows.map(function (r) {
   var d = dir(r);
   var ej = readIf(d + '/email/' + r.n + '.json');
-  var state = 'NO_JSON', recipient = null, companyId = null;
+  var state = 'NO_JSON', recipient = null, companyId = null, abc = null;
   if (ej) {
     try {
       var j = JSON.parse(ej);
       recipient = j.email || null;
       companyId = j.companyId || null;
+      // abc = the deal; blue-test owner derives from abc->ordhead->id_no.
+      // Contract (George via portland 2026-07-22): recipient with NO
+      // recoverable abc = quarantine. Harvest in this same read.
+      abc = j.abc || null;
       state = companyId ? 'MODERN' : 'MINIMAL';
     } catch (e) { state = 'JSON_PARSE_ERR'; }
   }
   var htm = readIf(d + '/' + r.file.replace(/\.pdf$/i, '.htm'));
   return {
     load: r.load, date: r.date, who: r.who, ext: r.ext, docType: r.docType, n: r.n,
-    state: state, recipient: recipient, companyId: companyId,
+    state: state, recipient: recipient, companyId: companyId, abc: abc,
     consignee: consignee(htm),
     apronName: r.date + '_' + r.who + '_' + r.ext + '_' + r.file.replace(/\.pdf$/i, '')
   };
