@@ -76,6 +76,16 @@ function arg(name, fallback) {
 var DAYS = parseInt(arg('days', '30'), 10);
 var OUT_DIR = arg('out', 'D:/clients/senath/data/emaillog');
 
+// Hard ceiling on messages per dataset file (prosser gen-2 audit, 2026-07-22).
+// Reggi reads these files SYNCHRONOUSLY on the request path and is
+// single-threaded and shared — an unbounded file would stall all 28 of his
+// entity/authority endpoints while it parses. Cap keeps any single file well
+// under the ~5MB line where he asked for an async read path.
+// Truncation is REPORTED, never silent: see coverage.truncated below. A page
+// that quietly drops a customer's older mail is the exact sin this whole
+// feature exists to avoid.
+var MAX_PER_DATASET = parseInt(arg('max', '5000'), 10);
+
 // ---------------------------------------------------------------- AWS client
 
 function makeClient() {
@@ -250,10 +260,21 @@ function main() {
 
     Object.keys(byDataset).forEach(function (ds) {
       var msgs = byDataset[ds].sort(function (a, b) { return a.time < b.time ? 1 : -1; });
+
+      // Counts are taken over the FULL window before capping, so the totals a
+      // user sees describe reality, not the slice we kept.
       var companies = {};
       msgs.forEach(function (m) { if (m.company) companies[m.company] = (companies[m.company] || 0) + 1; });
       var counts = {};
       msgs.forEach(function (m) { counts[m.status] = (counts[m.status] || 0) + 1; });
+
+      var totalInWindow = msgs.length;
+      var truncated = totalInWindow > MAX_PER_DATASET;
+      if (truncated) {
+        msgs = msgs.slice(0, MAX_PER_DATASET);   // newest first — keep the recent end
+        console.log('  ' + ds + ': capped ' + totalInWindow + ' -> ' + MAX_PER_DATASET +
+                    ' messages (reported as truncated)');
+      }
 
       writeJson(path.join(OUT_DIR, ds + '.json'), {
         dataset: ds,
@@ -266,9 +287,17 @@ function main() {
         // absence of a row is NOT evidence an email failed to send.
         coverage: {
           logBegins: '2026-07-14',
+          taggingLiveFrom: '2026-07-22T06:41:00Z',   // deploy time of the tag code
           scope: 'Emails sent by sendEmail.js (the tagged path) only. ' +
                  'Legacy senders are not represented in this file.',
-          messagesInFile: msgs.length
+          messagesInFile: msgs.length,
+          totalInWindow: totalInWindow,
+          truncated: truncated,
+          truncationNote: truncated
+            ? ('Showing the most recent ' + MAX_PER_DATASET + ' of ' + totalInWindow +
+               ' messages in this window. Older messages exist and were not dropped ' +
+               'from the log — only from this file. Widen with --max or narrow --days.')
+            : null
         },
         messages: msgs
       });
