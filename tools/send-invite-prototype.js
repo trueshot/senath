@@ -37,7 +37,10 @@ function requireAws() {
 var TEMPLATE = 'c:/clients/denver/web/prototype/invite-email.html';
 var FROM = 'invitations@producestandards.org';   // verified domain
 var TO = 'imtrueshot@gmail.com';
-var SUBJECT = 'Savannah Cole invited you to ProduceStandards';
+// 'Chen', not 'Cole' — denver gen-2 caught my subject contradicting the
+// template body, which says Savannah Chen at lines 32 and 88. Verified against
+// the file, not the DM.
+var SUBJECT = 'Savannah Chen invited you to ProduceStandards';
 var SECRETS = process.env.SENATH_AWS_SECRETS || 'c:/secrets/config.json';
 
 var VERIFIED = ['produceflow.com', 'producestandards.org', 'prodicon.com', 'jungledevices.com'];
@@ -55,14 +58,23 @@ var html;
 try { html = fs.readFileSync(TEMPLATE, 'utf8'); }
 catch (e) { fail('cannot read template ' + TEMPLATE + ': ' + e.message); }
 
-// The prototype keeps denver's FARMWEY story values (Savannah invites John) —
-// they ARE the demo, per denver. So there is nothing to interpolate, but an
-// unreplaced field would mean the template changed under us. Warn, don't fail.
-var leftovers = html.match(/\{[a-zA-Z]+\}/g);
+// The prototype keeps denver's FARMWEY story values (Savannah Chen invites
+// John) hard-coded — they ARE the demo. So nothing should interpolate, and any
+// {token} left in RENDERED markup is a real defect: it ships visible braces to
+// the recipient, or a dead link.
+//
+// Comments are stripped before scanning ON PURPOSE. denver's template documents
+// its field list in an HTML comment and marks the Stage A restore point in
+// another, so a naive scan fires every single run — and a warning that always
+// fires is one nobody reads. This is how the broken CTA was caught: the token
+// was in the live href, not a comment. Keep the distinction.
+var rendered = html.replace(/<!--[\s\S]*?-->/g, '');
+var leftovers = rendered.match(/\{[a-zA-Z]+\}/g);
 if (leftovers) {
-  console.log('NOTE: template contains placeholder tokens: ' +
-              leftovers.join(', ') + ' (expected for the A0 prototype — ' +
-              'denver keeps the FARMWEY story values hard-coded)');
+  fail('template has UNREPLACED tokens in rendered markup: ' +
+       leftovers.join(', ') + '\n' +
+       'These would ship to the recipient as literal text or a dead link. ' +
+       'Fix the template before sending.');
 }
 
 console.log('from:     ' + FROM);
