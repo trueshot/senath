@@ -40,12 +40,21 @@ var DBF = opt('--dbf', '//15.30.60.44/hawk/d/clients/willis/dbf/arapmast.dbf');
 var FOLDERS = opt('--folders',
   'C:/Users/georg/AppData/Local/Temp/claude/C--clients-nimbus-corporals-senath/a8ce9ade-d9b0-4e2f-bffd-5c316cf08071/scratchpad/portal-folders.txt');
 
-// --- the folder set (ground truth) ---
+// --only <COMPANY> : one-off, set PORTAL=T for a SINGLE company regardless of
+// folder, and touch NO other row. For a company pre-provisioned for a portal
+// before any document has been sent (no folder yet) — e.g. a grower being set
+// up. George's PROMIS ask (via portland, 2026-07-23) is the first use.
+var ONLY = opt('--only', null);
+if (ONLY) ONLY = String(ONLY).trim().toUpperCase();
+
+// --- the folder set (ground truth) — skipped entirely in --only mode ---
 var folderSet = {};
-fs.readFileSync(FOLDERS, 'utf8').split('\n').forEach(function (l) {
-  var co = l.trim().toUpperCase();
-  if (co) folderSet[co] = false;   // false = not yet matched to an arapmast row
-});
+if (!ONLY) {
+  fs.readFileSync(FOLDERS, 'utf8').split('\n').forEach(function (l) {
+    var co = l.trim().toUpperCase();
+    if (co) folderSet[co] = false;   // false = not yet matched to an arapmast row
+  });
+}
 
 // --- parse DBF header + field descriptors (dBASE III) ---
 var fd = fs.openSync(DBF, WRITE ? 'r+' : 'r');
@@ -92,8 +101,18 @@ for (var r = 0; r < recCount; r++) {
   if (rec[0] === 0x2A) { skippedDeleted++; continue; }   // deleted row
 
   var idno = rec.slice(idnoOff, idnoOff + idnoW).toString('ascii').trim().toUpperCase();
-  var want = folderSet.hasOwnProperty(idno) ? 0x54 /*T*/ : 0x46 /*F*/;
-  if (folderSet.hasOwnProperty(idno)) folderSet[idno] = true;   // matched
+
+  var want;
+  if (ONLY) {
+    // Single-company mode: set T for the target only, leave every other row
+    // exactly as it is. Never write F to anyone.
+    if (idno !== ONLY) continue;
+    want = 0x54; // T
+    folderSet[idno] = true;  // reuse the "matched" bookkeeping for the summary
+  } else {
+    want = folderSet.hasOwnProperty(idno) ? 0x54 /*T*/ : 0x46 /*F*/;
+    if (folderSet.hasOwnProperty(idno)) folderSet[idno] = true;   // matched
+  }
 
   var cur = rec[portalOff];
   if (cur === want) { already++; continue; }
