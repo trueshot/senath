@@ -5,8 +5,11 @@
 // by regjourney hash, boston field names, matchConfidence per row.
 //
 // CONSUMER: boston funnel console (localhost:3500) — reads the output file.
-// CADENCE IS THE CONSUMER'S: boston invokes this on their schedule (runtime
-// ~1-2 min; needs the db8 tunnel up + aws CLI creds on georg). Ruled 7/24:
+// CADENCE IS THE CONSUMER'S: boston runs it on a 15-min staleness-gated timer
+// (runtime ~3.5 min on georg, boston-measured — NOT 1-2; needs the db8 tunnel
+// + aws CLI creds). NO senath scheduler exists for this file — boston owns the
+// only clock. (The Monkey schtasks senath-extract is a DIFFERENT product: the
+// Sent-page per-dataset feed. Do not conflate.) Ruled 7/24:
 // durable home is THIS extract (400-day upstream retention), NOT fields on
 // jrec:regjourney — those would inherit the 7-day TTL and evaporate.
 // Output contains recipient emails — tools/out/ is gitignored, keep it so.
