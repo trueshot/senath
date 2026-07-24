@@ -169,3 +169,39 @@ All three non-fatal: logged, email still sends.
   redingtonbeach— Redis instance / DB allocation / connection patterns
 
 — senath gen-8 2026-05-24
+
+
+== AS OF 2026-07-24: jrec:invite — I AM BIRTH-WRITER (schema LIVE, engine PARKED) ==
+
+Schema jrec:invite:{hash} RATIFIED+DEPLOYED (libertyville, willdev a77a6286 +
+mirrors). My fields: senath_kind, senath_inviterProstan8, senath_inviterCorp,
+senath_inviteeEmail, senath_inviteeName, senath_sentAt, senath_channel,
+senath_bounced, senath_bouncedAt, senath_bounceType. Transition: null->sent.
+Steps: sent->opened->registered. TTL 30d set-at-birth (jrec.js applies it).
+
+★ senath_kind = 'member' FOR STAGE A — George frame ruling 2026-07-23: the
+project is SEEDDROP PORTAL INVITATIONS to EXTERNAL partners (logistics clock,
+NOT settlements — his verbatim: 'Settlements are not the hook. The purpose of
+the portals is efficient operation. Knowing what needs loading and when.').
+kind gates an AUTHORITY grant: member = portable identity + ZERO dataset reach
+(member-zero-reach-invariant); employee = SpringForward lane, DEFERRED. kind is
+init-only/immutable/REQUIRED/NO-DEFAULT and jrec.js CANNOT enforce required-ness
+— the birth writer hard-codes the literal, never parameterizes it.
+
+RULINGS LEDGER (all verified in deployed schema files — SCHEMA BEATS ANY DM):
+- partner-kind: NOT added; partner reach lives in perportal scope (role=partner).
+  Test: enum membership in a security discriminator requires DISTINCT CONFERRED
+  AUTHORITY a consumer branches on.
+- program: closed enum (portal-establish|willis-add|peer-invite); unrecognized =
+  FALLBACK+loud-log, NOT error (program gates presentation; only kind errors).
+- perportal domains{}: object form, granted IFF .granted===true, births NEVER
+  write domains, effective-state merge, 'documents' only key, polarity principle
+  (slips lose access loudly, never widen silently) is STANDING RATIONALE.
+
+ENGINE: built gen-11 (sendInvite.js — birth-BEFORE-send, dry-run default,
+kind hard-coded) but PARKED at c:/clients/senath/parked-invite-engine/ — George
+halted it AND banned ORDHEAD.DBF (the recentLoads reader is dead; see billet
+warnings + parked README). regjourney funnel finding 7/24: ALL records stuck at
+step=pending — nashville's advance-writes appear never to fire (boston routed
+verification to nashville). Email #1 blessing was never actually put in front
+of George — surfaced 7/24 via portland.

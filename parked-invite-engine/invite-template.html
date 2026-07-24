@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<!-- invite-template.html — PORTAL INVITATION email body. SWAPPABLE COPY FILE.
+     Engine: nodejs/sendInvite.js (senath). Copy: denver/emsworth own the words —
+     overwrite this file when George blesses the final story; the engine re-reads
+     it every send, no code change. Deploys from willdev root to all datasets
+     (email-options.json precedent).
+
+     Substitution tokens the engine fills:
+       {inviteeName}  {sharerCorp}  {ctaUrl}  {loadsLine}
+     {loadsLine} is composed by the ENGINE per the ratified honest-copy ladder
+     (shipDate past -> went out; future -> scheduled; orderDate only -> ordered;
+     none/failed -> generic/neutral). The template never makes load claims itself.
+
+     v0 frame: LOGISTICS (George 7/23 verbatim: portals are for efficient
+     operation — knowing what needs loading and when; NOT settlements).
+     Email-client-safe: tables, inline styles, no JS. -->
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width"></head>
+<body style="margin:0;padding:0;background-color:#f0f2f5;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f0f2f5;">
+<tr><td align="center" style="padding:32px 12px;">
+  <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:8px;overflow:hidden;border:1px solid #e2e6ea;">
+    <tr><td style="background-color:#1a3c2e;padding:20px 32px;">
+      <span style="font-family:Georgia,serif;font-size:20px;color:#ffffff;letter-spacing:.5px;">Produce<b>Standards</b></span>
+      <span style="font-family:Arial,sans-serif;font-size:11px;color:#9dbfae;padding-left:10px;">THE PRODUCE INDUSTRY NETWORK</span>
+    </td></tr>
+    <tr><td style="padding:36px 40px 8px;font-family:Arial,Helvetica,sans-serif;color:#1f2933;">
+      <p style="margin:0 0 14px;font-size:16px;">Hello {inviteeName},</p>
+      <p style="margin:0 0 14px;font-size:14px;line-height:1.6;"><b>{sharerCorp}</b> has set up a portal for you on ProduceStandards.org &mdash; one place to see every load they move for you, as it moves: what&rsquo;s loading, what&rsquo;s rolling, and the paperwork for each, without calling or waiting on a resend.</p>
+      <p style="margin:0 0 18px;font-size:14px;line-height:1.6;">{loadsLine}</p>
+    </td></tr>
+    <tr><td align="center" style="padding:8px 40px 8px;">
+      <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+        <td align="center" style="background-color:#2e7d51;border-radius:6px;">
+          <a href="{ctaUrl}" style="display:inline-block;padding:14px 44px;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:bold;color:#ffffff;text-decoration:none;">Open your portal</a>
+        </td>
+      </tr></table>
+    </td></tr>
+    <tr><td style="padding:14px 40px 34px;font-family:Arial,Helvetica,sans-serif;">
+      <p style="margin:0;font-size:12px;line-height:1.6;color:#5f6b76;">Registration takes about a minute. Your access is scoped to what {sharerCorp} shares with you &mdash; nothing else, and nothing of yours is visible to anyone you don&rsquo;t authorize.</p>
+    </td></tr>
+    <tr><td style="background-color:#f6f8f7;padding:14px 32px;border-top:1px solid #e2e6ea;">
+      <span style="font-family:Arial,sans-serif;font-size:11px;color:#8a949d;">Sent by {sharerCorp} via ProduceStandards.org &mdash; the produce industry identity network.</span>
+    </td></tr>
+  </table>
+</td></tr>
+</table>
+</body>
+</html>

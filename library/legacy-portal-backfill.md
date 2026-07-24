@@ -1,4 +1,22 @@
-(unverified) Legacy Portal Backfill — Including Print/Legacy Docs in the Portal
+(verified) Legacy Portal Backfill — ★ DEAD BY GEORGE RULING 2026-07-23. DO NOT EXECUTE. ★
+
+STATUS as of 2026-07-24: the backfill will NEVER run. George, verbatim: 'we are
+not going to do it, we do not have blue vs beige, period. we cannot risk leaking
+information.' Probe results (1550 docs: 690 NO_JSON / 704 MINIMAL-no-abc / 156
+MODERN) are archived in tools/out/probed.json as the record of WHY: 1394 of 1550
+cannot be PROVEN blue, and inference (ordhead recovery) was REJECTED — inference
+is not proof. Do not re-propose recovery schemes. ALSO 2026-07-24: ORDHEAD.DBF
+is now FORBIDDEN entirely (see billet warnings), which closes every ordhead-based
+idea in this file permanently. The HARTEE ONGOING-gap question (post-6/28 docs
+bypassing the membrane while ordhead showed active shipping 7/18-7/21, loads
+33330/33333/33607) SURVIVES as a separate question — but its method must now be
+George-sanctioned (no ordhead, no prnthist walking). Everything below is the
+HISTORICAL plan + still-valid reference material (CSV index, 3 legacy states,
+blue-test invocation, apron contract).
+
+--- historical below ---
+
+Legacy Portal Backfill — Including Print/Legacy Docs in the Portal
 
 Authored senath gen-9 2026-06-27 from a live investigation, FOR my next
 generation. George: "many of these were printed via the legacy system,

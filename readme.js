@@ -38,7 +38,8 @@ var facetMap = {
   '--facet-portal-wiring':     { file: 'portal-wiring.md',     desc: 'How a recipient gets wired to the out-box — two kinds of LINK, per-person prereq, option 1 (inode link) vs option 2 (read folder)' },
   '--facet-legacy-portal-backfill': { file: 'legacy-portal-backfill.md', desc: 'Including legacy/print docs in the portal — emails.csv index, 3 legacy states, EXACT blue-test invocation, HARTEE ongoing-gap evidence (senath gen-10)' },
   '--facet-email-tracking':    { file: 'email-tracking.md',    desc: 'Per-message SES delivery log (LIVE 2026-07-14) — CloudWatch, tags, email-lookup.js, what it honestly claims, AWS gotchas' },
-  '--facet-pdf-attach':        { file: 'pdf-attach.md',        desc: 'Per-customer PDF attachment (LIVE 2026-07-16) — email-options.json switch, obj.attachPdf interface, multipart/mixed build' }
+  '--facet-pdf-attach':        { file: 'pdf-attach.md',        desc: 'Per-customer PDF attachment (LIVE 2026-07-16) — email-options.json switch, obj.attachPdf interface, multipart/mixed build' },
+  '--facet-portal-status':     { file: 'portal-status.md',     desc: 'ARAPMAST.PORTAL flag + live tri-state route (LIVE 2026-07-24) — populate tool, sendEmail flag-write, detroit mount, HARD-WON GOTCHAS (ordhead ban, null-byte Edit trap, SMB scan latency)' }
 };
 
 var facetNames = Object.keys(facetMap);

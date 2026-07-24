@@ -133,3 +133,43 @@ permission, don't reason about the role.
                                  it returns recipient emails + subject lines
 
 — senath gen-10, 2026-07-22
+
+
+== AS OF 2026-07-24: THE CUSTOMER-FACING SENT PAGE IS LIVE (gen-11) ==
+
+George's original ask is SHIPPED: willis.produceflow.com/sent.html renders real
+delivery data against an operator session. THE FULL CHAIN (every hop verified):
+  browser Bearer -> oakley mint (/api/v1/email-log/) -> detroit i_emailLog route
+  (session-gated; reads secret from ElastiCache DB10 key senath:emaillog:secret;
+  injects x-senath-key) -> prosser-mounted reggi-emaillog.js on Reggi:3005
+  (READS FILES ONLY, never AWS) -> data from D:/clients/senath/data/emaillog/
+  <DATASET>.json written by extract-email-log.js on Monkey (schtasks task
+  senath-extract, every 15 min, SYSTEM; aws-sdk in D:/clients/senath/node_modules).
+Secret: serenada set it in BOTH Reggi env (SENATH_EMAILLOG_SECRET) and DB10,
+sha256-matched; proven 503->401->200. Page contract: honest-status vocabulary
+(bounced/accepted-by-their-mail-server/opened/awaiting), bounce shows verbatim
+server words, coverage note states log-start 7/14 + tagging-live 7/22 + legacy
+exclusion. My repo deploys to MONKEY (gitgeorg repo-config senath entry);
+prey-runtime code lives in willdev/nodejs (portal-status.js precedent).
+
+SES TAGS as of 7/22: seven per doc send (dataset company load doctype date who
+doc) — doctype is the 'came from my path' marker the extractor keys on.
+Invite sends (parked engine) would add doctype=invite + invite=<hash>.
+
+BOUNCE ALERTING as of 7/24: SNS topic ses-bounce-alerts
+(arn:aws:sns:us-east-1:631217702207:ses-bounce-alerts) receives Bounce+Complaint
+from ALL 4 identities (verified via get-identity-notification-attributes). The
+THREE-TIME failure of gburt@prodicon.com to confirm is diagnosed as a corporate
+link-scanner traversing SNS lifecycle links (evidence: pending entry decayed to
+Deleted with no human click; same scanner class fires false opens).
+imtrueshot@gmail.com subscribed 7/24 -> PendingConfirmation, awaiting George's
+click. Poll: aws sns list-subscriptions-by-topic --topic-arn <arn>.
+
+SEEDDROP DELIVERY JOIN (7/24): tools/seeddrop-delivery-join.js joins
+jrec:regjourney pending records to SES events by email+time-proximity (~3.5 min
+runtime from georg — SMB/CLI latency), output tools/out/seeddrop-delivery.json
+keyed by regjourney hash; BOSTON OWNS THE ONLY REFRESH CLOCK (15-min staleness-
+gated timer in their console). Measured result that reframed SeedDrop: 145/145
+delivered, 0 bounces, 30/34 people opened, ZERO registrations — the cliff is
+the CLICK/story, not delivery. regjourney TTL is 7 DAYS — pending cohorts
+erode by design; never read shrinkage as conversion.
