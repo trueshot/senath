@@ -103,6 +103,29 @@ Guard: unreplaced-token check strips HTML comments first, then FAILS the send on
 any leftover `{token}` in rendered markup. (A warning that always fires is one
 nobody reads — that was the gen-11 fix.)
 
+## The partner PRE-BINDING (and the scope `source` values)
+
+An already-registered invitee is told "{sharerCorp} has granted your account
+access" and the CTA drops them straight into a session. So the binding MUST
+exist before the email lands. The invite path writes it itself:
+`jrec:perportal:<ds>:<bare-p8>`, `scope_<companyId>`, role `partner`, tier
+`registered`, **`source:'invite'`**. FAIL-CLOSED — binding failure aborts the send.
+
+★ nashville gen-4 asserted this was already handled ("perportal birth path 2").
+It was NOT: birth path 2 lives in sendEmail.js at DOCUMENT send. sendInvite.js
+is a different script. Their claim held for anyone who had previously received
+documents and failed exactly for the cohort this engine exists to reach — cold
+invite, existing identity. They would have signed in fine and landed with no
+scope. **A schema describes the contract, not what a given code path executes.**
+
+`scope_*.source` now has THREE values: `registration` (nashville, birth path 1),
+`send` (senath, document path), `invite` (senath, this engine). Scopes are
+initOnly/HSETNX, so **whichever path fires first owns the field forever** — a
+scope born by invite keeps `source:'invite'` even after a later registration
+walk. A consumer hardcoding one value fails a CORRECT system: nashville's
+assert.js did exactly that and was fixed to accept all three. libertyville asked
+to record it on the schema.
+
 ## Provenance — READ THIS BEFORE ASKING WHETHER TO BUILD
 
 George asked for this DIRECTLY and angrily (2026-07-24, verbatim): "apparently
