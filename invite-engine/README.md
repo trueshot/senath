@@ -21,26 +21,40 @@ re-authorising.
 
 ## Status — honest
 
+Last verified 2026-07-27 16:00. **If you change any row, change it here in the
+same breath** — three stale artifacts of mine cost peers real time today
+(a "requires George's go" rule, an "awaiting go" status line, an undated email
+capture). A status table that lies is worse than none.
+
 | Piece | State |
 |---|---|
-| Engine (`sendInvite.js`) | BUILT. `node --check` clean, Node 5.12-safe (no arrows/backticks/let/const). |
-| New-user email body | WIRED (emsworth `portal-invite-engine.html`). Render-verified end to end. |
-| Identity fork | BUILT (denver gen-2's catch). An existing partner never gets a create-your-account email. |
-| Dry run | VERIFIED on georg. Substitutes correctly, CTA carries the hash, token guard fires. |
-| **Partner email body** | **MISSING.** `invite-template-partner.html`. emsworth owes it. Engine exits 1 rather than send the wrong body. |
-| **Deployed to a prey** | **NO.** Nobody can send one yet. |
-| **portland's Invite button** | **NOT WIRED.** They have the CLI surface. |
+| Engine `invite.js` (mountable) | **BUILT + DEPLOYED.** Node 5.12-safe. Coded errors, watchdog, `capabilities()`. |
+| CLI `sendInvite.js` | BUILT. Thin wrapper over the same function — ONE sender, two doors. |
+| New-user body | WIRED + render-verified (emsworth). |
+| Partner body | WIRED + render-verified (emsworth, 07-27). |
+| Identity fork | BUILT (denver's catch). An existing member never gets a create-your-account email. |
+| CTA fork | BUILT (nashville's call). Partners → `signin.html`, not the registration form. |
+| Partner pre-binding | BUILT. Scope written FAIL-CLOSED before the email leaves. |
+| Deployed to preys | **YES** — 07-27: willis, willdev + mirrors wey, farmwey. **DORMANT**: no route registered, cannot send. |
+| detroit's gated route | BUILT, not registered. Held on vernal's gate ruling. |
+| **New-user sends** | **REFUSED** (`new_user_path_not_live`) until register.html parses `?invite=` — nashville + George. |
+| **portland's Invite button** | **NOT WIRED.** Contract is stable; only *who gets a 403* can still move. |
+| **A human can send one** | **NO.** ← the only row that matters. |
 
-## Usage
+## Usage (CLI)
 
     node nodejs/sendInvite.js --company PROMIS --email person@grower.com \
-         [--name "John Field"] [--inviter "Savannah Chen"] \
+         [--name "John Field"] --inviter-p8 <prostan8> --inviter "Display Name" \
          [--channel operator-cli] [--send]
 
-DRY RUN IS DEFAULT — no `--send` means nothing born, nothing sent. Must run in
-the dataset working dir on the prey (reads `portal-config.json` and
-`data/i_track.js` from cwd). With `--send` and no corpProstan8 it refuses rather
-than guessing an identity field.
+DRY RUN IS DEFAULT — no `--send` means nothing born, nothing sent. Run in the
+dataset working dir on the prey (reads `portal-config.json` and
+`data/i_track.js`). On `--send` it REFUSES rather than guessing: no dataset, no
+corpProstan8, or no inviter identity = no send.
+
+★ `--inviter-p8` is the inviting PERSON (George: "yes it is me if I am logged
+in"). The OLD `--inviter`-only form recorded nothing — it was parsed and never
+used, so a caller believed they had attributed an invitation and had not.
 
 ## Hard rules that do NOT relax
 
