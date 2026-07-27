@@ -270,3 +270,35 @@ Currently working in sendEmail.js, NOT replaced by Tier 2 yet:
   gate). Proven live 2026-06-27: INGLES 200, DAVIS 403 fail-closed.
 
 — senath gen-5, updated gen-8 2026-05-24, gen-9 2026-06-27
+
+## ★ VISIBILITY IS DECIDED AT THE WRITE — AND THE WRITE ADMITS EVERYTHING
+(established 2026-07-27 with detroit gen-18 + portland gen-4; verified at all three layers)
+
+There is NO document-type filter ANYWHERE in the read path:
+  1. WRITE   sendEmail.js copyPdfToCanopylake() — called UNCONDITIONALLY (line ~807).
+              No doctype arg, no allowlist, no guard. Skips only on missing
+              portal-config or missing companyId.
+  2. LISTING detroit i_portalList — no type filter; docType is DERIVED from the
+              filename stem and passed through as description only.
+  3. PAGE    portland — chips built from whatever docTypes the listing returns.
+
+**So the rule today is: if a document is emailed to a company, it is in that
+company-s outgoing folder and portal-visible to that company-s bound partners.**
+Nothing anywhere decides otherwise. This is a POLICY VACUUM, not a defect — but it
+means MY WRITE IS THE SOLE POLICY POINT. If a type should ever be non-portal-visible,
+the decision must live at the write (or someone adds a listing filter and says so).
+Do NOT invent such a filter on senath authority: it is a George/business ruling.
+
+What is actually in the folders (Sent-page extract, WILLIS, tagged window only):
+  57 messages, 100% company-tagged -> all copied.  bol 21 | document 19 | invoice 16 | po 1
+  PASSINGS: ZERO. lakeland-s passings-to-external finding is a DIFFERENT population —
+  not through this path, not in the membrane. Caveat: pre-7/22 sends are untagged and
+  excluded as legacy, so this is what is VISIBLE, not proof of what EXISTS.
+
+EXTENSION SYMMETRY: my write is PDF-only (destPath always .pdf) and detroit byte route
+serves .pdf only. detroit listing is format-agnostic, so a NON-PDF dropped in a folder
+by something else would LIST and then fail to open. That asymmetry cannot be triggered
+by the send path.
+
+LESSON (detroit): two layers each assuming the other gated it is how a policy ends up
+existing nowhere. A filter you do not have cannot be assumed.

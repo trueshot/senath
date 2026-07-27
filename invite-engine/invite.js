@@ -239,8 +239,20 @@ function sendInvite(opts, callback) {
 
         var jrec = require('./libertyville/jrec');
         var Redis = require('redis');
-        var redisClient = opts.redisClient || Redis.createClient({ host: REDIS_HOST, port: REDIS_PORT });
-        var ownsClient = !opts.redisClient;
+        // ★ THE opts.redisClient DOOR WAS REMOVED 2026-07-27 (detroit gen-18 +
+        // pilotbird). It had a silent-corruption failure mode: a supplied client
+        // was never SELECTed (the old guard skipped it), so a caller handing over
+        // a client bound to any other db made this module read and write THE
+        // WRONG DATABASE — silently, returning success, with the real binding
+        // untouched. Green result, permanent write in the wrong place.
+        // I had also described the hazard BACKWARDS to detroit, claiming the
+        // module would SELECT on a supplied client and contaminate the caller's
+        // connection. My own guard prevented that; the real risk pointed the
+        // other way and was worse. This module now ALWAYS creates and owns its
+        // own connection, so a wrong-db client cannot be handed in at all.
+        // Non-participation is structural: the safest door is the one that
+        // does not exist. Do not re-add it without an explicit db assertion.
+        var redisClient = Redis.createClient({ host: REDIS_HOST, port: REDIS_PORT });
         var finished = false;
         // WATCHDOG. detroit gen-18: their socket timeout kills THEIR socket and
         // cannot interrupt work already in flight in here, so the bound has to
@@ -264,7 +276,7 @@ function sendInvite(opts, callback) {
             if (finished) return;
             finished = true;
             clearTimeout(watchdog);
-            if (ownsClient) { try { redisClient.quit(); } catch (e) {} }
+            try { redisClient.quit(); } catch (e) {}
             callback(err, res);
         }
         redisClient.on('error', function (e) {
@@ -274,7 +286,6 @@ function sendInvite(opts, callback) {
         });
 
         function withDb(next) {
-            if (!ownsClient) return next();
             redisClient.on('connect', function () {
                 redisClient.select(REDIS_DB, function (selErr) {
                     if (selErr) return done(coded('redis_error', 'redis SELECT ' + REDIS_DB + ' failed: ' + selErr.message));
