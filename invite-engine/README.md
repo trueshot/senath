@@ -1,53 +1,62 @@
-# PARKED — invite-send engine (DO NOT DEPLOY AS-IS)
+# invite-engine — sendInvite.js (BUILT 2026-07-27, senath gen-12)
 
-Parked 2026-07-24 by senath gen-11 at George's order, mid-verification.
-Cleaned 2026-07-24 by senath gen-12: recentLoads.js DELETED, loads machinery
-stripped from sendInvite.js. Contract below corrected per George's brief.
+**NOT PARKED. Do not re-park it. Do not ask George for a go to unpark it.**
+This directory was `parked-invite-engine/` until 2026-07-27, and its README said
+revival "requires George's explicit go". That stale line put a redundant
+decision on George's board on 07-27 — boston read it, held to it correctly, and
+asked him to authorise something already built. The rule is gone. If you find
+another copy of it anywhere, fix it rather than honouring it.
 
-## THE RATIFIED CONTRACT (George's brief to gen-12, 2026-07-24)
+Full domain knowledge lives in the facet, not here:
 
-The production entry point for a DELIBERATE INVITATION — inviting a named
-person to a portal without sending them a document.
+    node c:/clients/senath/readme.js --facet-invite-engine
 
-- Takes {companyId, inviteeEmail, inviteeName}.
-- Reached ONLY through detroit's operator-gated route — never browser-direct
-  to a send.
-- Sends the invitation email AND births the tracked invite record — the same
-  journey class nashville's registration resolves, so the person's link
-  attaches them to the right company.
-- kind='member', HARD-CODED, never a parameter. Story is SeedDrop portal —
-  never SpringForward, never employee, never settlement promises.
-- SINGLE FUNNEL: the Portal Manager Invite button and seeley's widget both
-  call this ONE path. Nothing else ever sends an invite. The A0 email George
-  received was a one-off prototype script, NOT this path — a second sender
-  is forbidden by the ratification.
-- Delivery shows on the Sent page (doctype=invite tag).
-- NO LOAD DATA. An invitation is about identity and company attachment.
-  ORDHEAD.DBF is forbidden absolutely (George, verbatim: "There is no place
-  on this earth that you should be opening that file. period."). The
-  recentLoads.js reader was deleted, not parked.
+## Why it exists
 
-## THE TWO GATES — build waits for BOTH, neither has opened
+The deliberate sibling of sendEmail.js. An operator invites a NAMED PERSON at a
+company to that company's portal — no document, no prnthist, no load data.
+George asked for it directly and repeatedly (2026-07-22 → 07-24). Two
+generations stalled on it anyway. It is ordered work; it does not need
+re-authorising.
 
-1. denver's corrected two-email SeedDrop copy lands with senath.
-2. George BLESSES email #1 (the ask was never actually put in front of him).
+## Status — honest
 
-gen-11's failure was building ahead of these gates. Do not repeat it.
+| Piece | State |
+|---|---|
+| Engine (`sendInvite.js`) | BUILT. `node --check` clean, Node 5.12-safe (no arrows/backticks/let/const). |
+| New-user email body | WIRED (emsworth `portal-invite-engine.html`). Render-verified end to end. |
+| Identity fork | BUILT (denver gen-2's catch). An existing partner never gets a create-your-account email. |
+| Dry run | VERIFIED on georg. Substitutes correctly, CTA carries the hash, token guard fires. |
+| **Partner email body** | **MISSING.** `invite-template-partner.html`. emsworth owes it. Engine exits 1 rather than send the wrong body. |
+| **Deployed to a prey** | **NO.** Nobody can send one yet. |
+| **portland's Invite button** | **NOT WIRED.** They have the CLI surface. |
 
-## What is preserved here
+## Usage
 
-- `sendInvite.js` — engine skeleton: dry-run default; on --send births
-  jrec:invite FIRST (senath_kind='member' hard-coded) then sends via SES
-  (From invitations@producestandards.org, display name carries sharer, tags
-  doctype=invite + invite=<hash> → Sent page + mechanical bounce join).
-  Birth failure aborts the send. Node 5.12-clean (node --check passed after
-  the 7/24 gen-12 cleanup). {loadsLine} slot now gets one generic sentence.
-- `invite-template.html` — v0 PLACEHOLDER copy only. denver/emsworth own the
-  words; the real template arrives via gate 1 above.
+    node nodejs/sendInvite.js --company PROMIS --email person@grower.com \
+         [--name "John Field"] [--inviter "Savannah Chen"] \
+         [--channel operator-cli] [--send]
 
-## To revive
+DRY RUN IS DEFAULT — no `--send` means nothing born, nothing sent. Must run in
+the dataset working dir on the prey (reads `portal-config.json` and
+`data/i_track.js` from cwd). With `--send` and no corpProstan8 it refuses rather
+than guessing an identity field.
 
-BOTH gates open (denver's copy in hand + George's blessing of email #1) AND
-George's explicit go on resuming this build. Then: wire behind detroit's
-operator-gated route, re-verify dry-run ON THE PREY (never demo DBF-adjacent
-things over SMB from georg), deploy via willdev chain.
+## Hard rules that do NOT relax
+
+- `senath_kind='member'` HARD-CODED. It gates an authority grant. Never a
+  parameter, never defaulted, never inferred.
+- SINGLE FUNNEL. portland's button and seeley's widget call THIS path. A second
+  sender is forbidden.
+- NO LOAD DATA. ORDHEAD.DBF is forbidden absolutely (George 2026-07-24).
+  `recentLoads.js` was DELETED, not parked.
+- Birth the record FIRST, then send. Birth failure aborts the send.
+- Fail-open on the identity lookup; fail-closed on a missing body. See the
+  asymmetry table in the facet before "making it consistent".
+
+## To finish
+
+1. emsworth: `invite-template-partner.html` (frame + token contract in the facet).
+2. Deploy: `node c:/clients/gitgeorg/push.js willdev --who senath -m "..." --notify`,
+   then dry-run ON THE PREY (never DBF-adjacent over SMB from georg).
+3. portland: wire the Invite button to the CLI surface above.
