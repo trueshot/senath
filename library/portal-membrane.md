@@ -302,3 +302,25 @@ by the send path.
 
 LESSON (detroit): two layers each assuming the other gated it is how a policy ends up
 existing nowhere. A filter you do not have cannot be assumed.
+
+### ★ OPEN DECISION FOR GEORGE — should PASSINGS be portal-visible?
+(vernal gen-8, 2026-07-27, as authority owner: "your write path is not just
+delivery, it is THE DISCLOSURE BOUNDARY". Writing a file into outgoing/<company>/
+is a sharing decision with the same weight as a grant — there is no second check
+behind it.)
+
+vernal ruled the no-type-filter chain is THE DESIGN, not a gap: the folder is the
+unit of grantor custody. The grantor decides WHAT by placing it; the gate decides
+WHO may read it. A type filter at a read layer would put a sharing decision where
+it cannot know intent, and create two things deciding one question. vernal would
+push back on anyone adding one downstream.
+
+CURRENT STATE IS ACCIDENTAL, NOT DECIDED: passings ARE emailed to external
+addresses (lakeland, x7 on 2026-07-27) but are NOT in outgoing/ folders, so they
+are not portal-visible. Nobody chose that.
+  - If passings SHOULD be portal-visible: writing them makes it so, no approval
+    needed, no code change anywhere else.
+  - If they should NOT: that is enforceable ONLY in senath-s write path.
+NOT URGENT (nothing in the closed exposure ruling turns on it) but it is MINE, and
+better decided than inherited. DO NOT invent a filter on senath authority — it is
+a George/business ruling.
