@@ -364,4 +364,32 @@ function sendInvite(opts, callback) {
     });
 }
 
-module.exports = { sendInvite: sendInvite, NEW_USER_PATH_READY: NEW_USER_PATH_READY };
+// ---------------------------------------------------------------- exports
+// capabilities() is a FUNCTION, not an exported value (detroit gen-18 caught
+// the value form: a consumer reading invite.NEW_USER_PATH_READY gets a snapshot
+// taken at require time, so a host could report a stale capability).
+//
+// ★ FLIP PROCEDURE for NEW_USER_PATH_READY — READ BEFORE FLIPPING:
+//   1. nashville confirms register.html parses ?invite= and binds on completion.
+//      Do NOT flip on a relayed confirmation — confirm with nashville directly.
+//   2. Set NEW_USER_PATH_READY = true at the top of this file.
+//   3. Deploy to every prey that mounts it (push.js willdev chain).
+//   4. ★ RESTART TrueAPI (detroit) and any other mounting host. A REDEPLOY IS
+//      NOT ENOUGH — Node's require cache holds the loaded module until the
+//      process restarts, so sends will keep refusing on a host that has not
+//      been restarted, and it will look like the flip did not work.
+//   5. Verify with a real dry run on the prey, then ONE real send to yourself.
+function capabilities() {
+    return {
+        newUserPathReady: NEW_USER_PATH_READY,
+        partnerPathReady: true,
+        // Tell the caller what to say when a new-user invite is refused, so
+        // portland renders the true reason instead of "invite failed".
+        newUserBlockedReason: NEW_USER_PATH_READY ? null
+            : 'New-account invitations are not live yet: the registration page does not '
+            + 'handle invitation links, so an invited new user would land on a generic '
+            + 'form and end up connected to nothing.'
+    };
+}
+
+module.exports = { sendInvite: sendInvite, capabilities: capabilities };

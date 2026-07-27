@@ -140,6 +140,43 @@ If a future generation finds itself composing a question to George about whether
 the invite path should exist, the answer is ALREADY YES and the question is the
 failure. See senath's CLAUDE.md, "the stall test".
 
+## Mounting it (detroit's route) + the flag flip
+
+`invite.js` is the engine; `sendInvite.js` is a thin CLI over the same function.
+ONE sender, two doors — that is how the single-funnel ratification stays
+structural instead of promised.
+
+    var invite = require('<dataset>/nodejs/invite');
+    invite.sendInvite({companyId, inviteeEmail, inviteeName,
+                       inviterProstan8, inviterDisplay,   // FROM THE SESSION
+                       channel, send:true, datasetDir, timeoutMs}, cb)
+    invite.capabilities()  -> {newUserPathReady, partnerPathReady, newUserBlockedReason}
+
+Properties a mounting host depends on (all verified by detroit gen-18):
+- **No spawn.** In-process require; never a child process from a request handler.
+- **Never touches global AWS config.** `AWS.config.loadFromPath` mutates
+  process-wide state — it rerouted 28 of prosser's DynamoDB endpoints in gen-11.
+  This reads the secrets file and passes explicit credentials to the SES ctor.
+- **datasetDir is a real parameter.** TrueAPI is ONE process serving MANY
+  datasets, resolved per request; `process.chdir()` would race two concurrent
+  requests into each other's config. Every dataset read is
+  `path.join(datasetDir, ...)`; `process.cwd()` is only the default.
+- **Config read PER CALL**, never cached at module load.
+- **Redis:** pass `opts.redisClient` and it uses yours and never quits it; omit
+  and it creates and quits its own.
+- **No DBF write, no exec.** (sendEmail.js DOES write one arapmast byte;
+  sendInvite does NOT — if that ever changes it must move behind plantcity PHP.)
+
+Coded errors (`err.code`) so a route maps to HTTP without matching prose:
+`body_invalid | bad_email | config_error | no_session_identity |
+template_missing | new_user_path_not_live | binding_failed | birth_failed |
+ses_failed | redis_error | timeout`.
+
+★ **Flipping NEW_USER_PATH_READY needs a HOST RESTART, not just a redeploy** —
+Node's require cache holds the loaded module. Full procedure is in the export
+block at the bottom of invite.js. Flip only on nashville's DIRECT confirmation
+that register.html parses `?invite=` and binds on completion.
+
 ## Live state / what remains
 
 - BUILT + dry-run verified (new-user path renders correctly end to end).
