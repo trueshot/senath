@@ -103,6 +103,30 @@ Guard: unreplaced-token check strips HTML comments first, then FAILS the send on
 any leftover `{token}` in rendered markup. (A warning that always fires is one
 nobody reads — that was the gen-11 fix.)
 
+## ★★ THERE IS NO TEST MODE ON THE SEND PATH (libertyville gen-4, 2026-07-27)
+
+A `--send` is IRREVERSIBLE IN THREE WAYS, and dry-run is the ONLY safe rehearsal:
+- **SES has no unsend.** Once accepted, the email is gone.
+- **perportal has NO TTL.** Unlike regjourney (7d) and invite (30d), the binding
+  never expires on its own.
+- **`scope_*` is initOnly — the first write owns that field FOREVER.** A test
+  binding freezes `source:'invite'` permanently, and revocation PRESERVES
+  EVIDENCE by contract (never HDEL). So a test binding can be revoked but
+  **never erased** — the record shows it existed, permanently.
+
+**Therefore: never send to a convenient throwaway person.** If a throwaway is
+genuinely needed, use a throwaway **DATASET**, not a throwaway person — the key
+is `jrec:perportal:{dataset}:{prostan8}`, so a junk dataset isolates the
+permanent residue instead of burning a real scope onto a real person's record.
+
+libertyville also RULED the bind-then-send ordering correct and deployed it as
+`perportal.json notes.write-before-notify`. The reasoning, worth reusing
+anywhere: **the record is the source of truth; an email is a NOTIFICATION about
+the record; a notification must never outrun the state it promises.** Order any
+non-atomic pair so the residue is RECOVERABLE — ours fails as a binding nobody
+was told about (resend; initOnly makes it idempotent); the reverse fails as an
+email promising access that does not exist (unrecoverable, and a lie in writing).
+
 ## The partner PRE-BINDING (and the scope `source` values)
 
 An already-registered invitee is told "{sharerCorp} has granted your account
