@@ -80,7 +80,24 @@ try {
 if (SEND && !inviterProstan8) fail('portal-config.json missing corpProstan8 — cannot attribute the inviter corp. Fix config; not guessing an identity field.');
 
 var inviteHash = crypto.randomBytes(16).toString('hex');
-var ctaUrl = 'https://producestandards.org/register?invite=' + inviteHash;
+
+// ---------------------------------------------------------------- CTA fork
+// THE URL FORKS TOO, not just the body (nashville gen-4, 2026-07-27).
+// The engine already resolved identity at send time; routing a known identity
+// through the registration form makes my page re-derive a fact I hold and
+// re-ask for a phone number to reach a binding I already wrote. So:
+//   no identity  -> /register?invite=<hash>   (needs nashville's handler — SEE WARNING)
+//   has identity -> /signin.html              (redirects via /oauth/authorize
+//                   returnUrl=/home.html, landing them authenticated on
+//                   sunrise's portal home). No phone, no SMS, no form.
+// ★ WARNING, verified by nashville 2026-07-27: register.html does NOT PARSE
+// '?invite=' AT ALL today — it reads jrec + the 8 legacy params, and 'invite'
+// appears zero times. A new-user invite link therefore lands on the GENERIC
+// form with no context, and a completion would bind nothing. The NEW-USER path
+// must NOT go live until that handler exists (George's call, nashville's build).
+var CTA_NEW_USER = 'https://producestandards.org/register?invite=' + inviteHash;
+var CTA_PARTNER  = 'https://producestandards.org/signin.html';
+var ctaUrl = CTA_NEW_USER;   // reassigned once the identity check returns
 
 // ------------------------------------------------- identity check (the FORK)
 // Lifted verbatim in behaviour from sendEmail.js checkEmailRegisteredToPER.
@@ -161,6 +178,7 @@ checkEmailRegisteredToPER(inviteeEmail, function (_, identity) {
             process.exit(1);
         }
         chosenTemplate = partnerTemplate;
+        ctaUrl = CTA_PARTNER;   // they have an account — send them to sign-in, not registration
     }
 
     var html = renderTemplate(chosenTemplate);
@@ -201,6 +219,51 @@ checkEmailRegisteredToPER(inviteeEmail, function (_, identity) {
             if (selErr) { console.error('Redis SELECT 8 failed:', selErr.message); process.exit(1); }
 
             var nowIso = new Date().toISOString();
+
+            // ---- PARTNER PRE-BINDING (senath gen-12, 2026-07-27) ------------
+            // nashville's answer assumed an already-registered invitee is
+            // ALREADY bound at send time. That is true of sendEmail.js
+            // (perportal BIRTH PATH 2) but the invite path is a DIFFERENT
+            // script and did not write it — so it only held for people who had
+            // previously received documents. Someone invited cold would sign in
+            // and find nothing, while the email said "{sharerCorp} has granted
+            // your account access". So the invite path writes the binding too.
+            // FAIL-CLOSED, per the asymmetry rule: if the binding cannot be
+            // written the email's promise is false, so the send aborts. A
+            // partner invitation that promises access it did not grant is a
+            // wrong email, not a late one.
+            // source:'invite' distinguishes it from 'send' / 'registration' —
+            // nashville + libertyville told, as consumers may branch on it.
+            function bindPartnerThen(next) {
+                if (!isPartner || !identity.prostan8) return next();
+                var perportalP8 = String(identity.prostan8).replace(/^u_/, '');   // verify API returns u_<id>
+                var scopeField = 'scope_' + String(companyId).replace(/[^A-Za-z0-9_]/g, '_');
+                var ops = {
+                    set: { senath_lastInviteAt: nowIso },
+                    initOnly: {},
+                    initialCoherence: { tier: 'registered' }
+                };
+                ops.initOnly[scopeField] = JSON.stringify({
+                    companyId: companyId,
+                    pulpId: null,                    // invite takes an email, not a PULP row
+                    role: 'partner',
+                    boundAt: nowIso,
+                    relationshipKey: 'jrec:portal:' + dataset + ':' + companyId,
+                    source: 'invite'
+                });
+                jrec.upsert(redisClient, 'perportal', [dataset, perportalP8], 'senath', ops, function (ppErr) {
+                    if (ppErr) {
+                        console.error('perportal binding FAILED — partner send ABORTED: ' + ppErr.message);
+                        console.error('The email would have promised access that was never granted.');
+                        try { redisClient.quit(); } catch (e) {}
+                        process.exit(1);
+                    }
+                    console.log('perportal binding OK: perportal:' + dataset + ':' + perportalP8 + ' (' + scopeField + ')');
+                    next();
+                });
+            }
+
+            bindPartnerThen(function () {
             jrec.upsert(redisClient, 'invite', [inviteHash], 'senath', {
                 set: {
                     senath_kind:            'member',   // EXPLICIT. Gates an authority grant.
@@ -257,6 +320,7 @@ checkEmailRegisteredToPER(inviteeEmail, function (_, identity) {
                     try { redisClient.quit(); } catch (e) {}
                     process.exit(0);
                 });
+            });
             });
         });
     });
