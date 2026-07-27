@@ -31,9 +31,10 @@
 //      8th tag: makes Delivery/Bounce/Open -> senath_bounced correlation
 //      mechanical), dataset, company.
 //
-// COPY: the engine composes {loadsLine} per the ratified honest ladder
-// (measured 7/24: SHIP_DATE is a SCHEDULED date, 50% populated; ORDER_DATE
-// 99.7%; a past-tense claim requires shipDate present AND <= today). The
+// COPY: loads-line machinery REMOVED (George 2026-07-24). An invitation is
+// about identity and company attachment — it has no business reading load
+// data. The template's {loadsLine} slot gets one generic sentence until
+// denver/emsworth's blessed copy replaces the template wholesale. The
 // template file is denver/emsworth's to overwrite; the engine re-reads per send.
 //
 // Node 5.12 compatible: no template literals, no arrows, no let/const.
@@ -81,73 +82,89 @@ if (SEND && !inviterProstan8) fail('portal-config.json missing corpProstan8 — 
 var inviteHash = crypto.randomBytes(16).toString('hex');
 var ctaUrl = 'https://producestandards.org/register?invite=' + inviteHash;
 
-// ---------------------------------------------------------------- loads line
-// Ratified honest-copy ladder. recentLoads NEVER throws; ok:false -> neutral
-// line with NO load claim (never render a lookup failure as "no loads").
-var getRecentLoads = require('./recentLoads').getRecentLoads;
-
-function todayIso() {
-    var d = new Date();
-    var m = d.getMonth() + 1, day = d.getDate();
-    return d.getFullYear() + '-' + (m < 10 ? '0' : '') + m + '-' + (day < 10 ? '0' : '') + day;
-}
-function humanDate(iso) {
-    var MO = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-    var p = String(iso).split('-');
-    return MO[parseInt(p[1], 10) - 1] + ' ' + parseInt(p[2], 10);
-}
-function composeLoadsLine(result) {
-    if (!result || result.ok !== true) {
-        // lookup failed -> NEUTRAL, no load claim at all (tri-state: undefined)
-        return 'Everything ' + sharerCorp + ' moves for you shows up here as it happens.';
-    }
-    var loads = result.loads || [];
-    if (loads.length === 0) {
-        // VERIFIED zero -> the empty variant IS the launch case (Promiseland)
-        return 'The portal is ready and waiting \u2014 when your first load moves, you\u2019ll see it here as it happens.';
-    }
-    var today = todayIso(), i, L;
-    for (i = 0; i < loads.length; i++) {          // a. past-tense: shipDate present AND <= today
-        L = loads[i];
-        if (L.shipDate && L.shipDate <= today) {
-            return 'Load ' + L.loadNumber + ' went out ' + humanDate(L.shipDate) + ' \u2014 it and everything else ' + sharerCorp + ' moves for you is in here.';
-        }
-    }
-    for (i = 0; i < loads.length; i++) {          // b. future-tense: scheduled
-        L = loads[i];
-        if (L.shipDate && L.shipDate > today) {
-            return 'Load ' + L.loadNumber + ' is scheduled to go out ' + humanDate(L.shipDate) + ' \u2014 you\u2019ll see it move in here, along with everything else ' + sharerCorp + ' handles for you.';
-        }
-    }
-    L = loads[0];                                  // c. order-date / dateless concrete
-    if (L.orderDate) {
-        return 'Load ' + L.loadNumber + ', ordered ' + humanDate(L.orderDate) + ', is in motion \u2014 it and everything else ' + sharerCorp + ' moves for you is in here.';
-    }
-    return 'Load ' + L.loadNumber + ' is moving for you now \u2014 it and everything else is in here.';
+// ------------------------------------------------- identity check (the FORK)
+// Lifted verbatim in behaviour from sendEmail.js checkEmailRegisteredToPER.
+// denver gen-2 caught the gap 2026-07-27: without this, inviting an EXISTING
+// ProduceStandards partner tells them to create an account they already have.
+// The document pipeline has forked on this since it was built; the invite path
+// never inherited it. FAIL-OPEN to not-registered on every error path \u2014 an
+// identity API hiccup must never block an invitation (same rule as the
+// document path). Node 5.12-safe: no arrows, no template literals.
+var http = require('http');
+function checkEmailRegisteredToPER(email, callback) {
+    var postData = JSON.stringify({ email: email });
+    var options = {
+        hostname: '172.31.28.199',   // Monkey (verifyApi.js) \u2014 NOT Hawk
+        port: 3006,
+        path: '/api/check-prostan-partner',
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(postData) },
+        timeout: 5000
+    };
+    var done = false;
+    function finish(res) { if (!done) { done = true; callback(null, res); } }
+    var req = http.request(options, function (res) {
+        var data = '';
+        res.on('data', function (c) { data += c; });
+        res.on('end', function () {
+            try {
+                var r = JSON.parse(data);
+                if (r.success) {
+                    return finish({ isRegistered: r.isPartner === true, prostan8: r.prostan8 || null, skipReason: null });
+                }
+                finish({ isRegistered: false, prostan8: null, skipReason: 'api_error' });
+            } catch (e) {
+                finish({ isRegistered: false, prostan8: null, skipReason: 'parse_error' });
+            }
+        });
+    });
+    req.on('error', function (e) { finish({ isRegistered: false, prostan8: null, skipReason: 'network_error:' + e.message }); });
+    req.on('timeout', function () { req.abort(); finish({ isRegistered: false, prostan8: null, skipReason: 'timeout' }); });
+    req.write(postData);
+    req.end();
 }
 
 // ---------------------------------------------------------------- template
 function esc(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
-function renderTemplate(loadsLine) {
+function renderTemplate(path) {
     var html;
-    try { html = fs.readFileSync(templatePath, 'utf8'); }
-    catch (e) { fail('cannot read template ' + templatePath + ': ' + e.message); }
-    html = html.split('{inviteeName}').join(esc(inviteeName || 'there'))
+    try { html = fs.readFileSync(path, 'utf8'); }
+    catch (e) { fail('cannot read template ' + path + ': ' + e.message); }
+    // inviteeName substitutes to EMPTY when absent \u2014 emsworth's body is authored
+    // 'Hi {inviteeName}' with NO comma precisely so it renders 'Hi Maria' or a
+    // bare 'Hi'. Do not substitute a filler word here; it breaks their design.
+    html = html.split('{inviteeName}').join(esc(inviteeName))
                .split('{sharerCorp}').join(esc(sharerCorp))
-               .split('{ctaUrl}').join(ctaUrl)
-               .split('{loadsLine}').join(loadsLine);   // engine-composed, already safe text
+               .split('{ctaUrl}').join(ctaUrl);
     var leftovers = html.replace(/<!--[\s\S]*?-->/g, '').match(/\{[a-zA-Z]+\}/g);
     if (leftovers) fail('template has UNREPLACED tokens in rendered markup: ' + leftovers.join(', '));
     return html;
 }
 
 // ---------------------------------------------------------------- main
-getRecentLoads(companyId, {}, function (ignored, loadsResult) {
-    var loadsLine = composeLoadsLine(loadsResult);
-    var html = renderTemplate(loadsLine);
-    var subject = sharerCorp + ' set up your portal on ProduceStandards';
+checkEmailRegisteredToPER(inviteeEmail, function (_, identity) {
+    // THE FORK. A person who already holds a ProduceStandards identity must NOT
+    // be told to create an account. Their body is a different one (partner
+    // template). Until that body exists the engine REFUSES rather than sending
+    // the wrong email — a wrong invitation is worse than a delayed one.
+    var isPartner = identity.isRegistered === true;
+    var partnerTemplate = opt('partner-template', 'invite-template-partner.html');
+    var chosenTemplate = templatePath;
+    if (isPartner) {
+        if (!fs.existsSync(partnerTemplate)) {
+            console.error('BLOCKED: ' + inviteeEmail + ' is ALREADY a ProduceStandards partner'
+                + (identity.prostan8 ? ' (' + identity.prostan8 + ')' : '') + '.');
+            console.error('The new-user body would tell them to create an account they already have.');
+            console.error('Needs the partner body at ' + partnerTemplate + ' (emsworth owns the words).');
+            process.exit(1);
+        }
+        chosenTemplate = partnerTemplate;
+    }
+
+    var html = renderTemplate(chosenTemplate);
+    var subject = sharerCorp + ' set up a portal for you';
 
     console.log('dataset:   ' + dataset);
     console.log('company:   ' + companyId);
@@ -156,8 +173,9 @@ getRecentLoads(companyId, {}, function (ignored, loadsResult) {
     console.log('subject:   ' + subject);
     console.log('kind:      member (Stage A, hard-coded — gates authority, never a parameter)');
     console.log('invite:    ' + inviteHash);
-    console.log('loadsLine: ' + loadsLine +
-        (loadsResult && loadsResult.ok === false ? '   [LOOKUP FAILED: ' + loadsResult.error + ' — neutral line used]' : ''));
+    console.log('identity:  ' + (isPartner ? 'EXISTING PARTNER' : 'new user')
+        + (identity.skipReason ? '  [check failed: ' + identity.skipReason + ' — defaulted to new user]' : '')
+        + '  -> template ' + chosenTemplate);
 
     try { fs.writeFileSync('latest_invite_preview.html', html); console.log('preview:   latest_invite_preview.html'); } catch (e) {}
 
