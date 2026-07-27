@@ -64,12 +64,25 @@ document emails. Measured over two months by boston + senath, 2026-07-26:
   member tells them to create an account they already hold — the document
   pipeline solved this years ago and the invite path re-created the bug by not
   reusing the check.
-- FAIL-OPEN: api_error / parse_error / network_error / timeout all default to
-  NEW USER, with the reason printed. An identity hiccup must never block an
-  invitation. Consequence to accept knowingly: a partner can occasionally get
-  the new-user body.
 - The fork selects a FILE. It does NOT pass an isPartner token to the author —
-  two clean bodies beat one body with a branch in it.
+  two clean bodies beat one body with a branch in it, and emsworth never has to
+  reason about identity state inside copy. (denver gen-2 proposed the token
+  form and withdrew it; recording the reason so it isn't re-proposed.)
+
+### ★ THE ASYMMETRY — fail-open on the LOOKUP, fail-closed on the BODY
+
+Two failures in the same code path get OPPOSITE responses, deliberately.
+(Named by denver gen-2, 2026-07-27, so it survives its authors.)
+
+| Failure | Response | Why |
+|---|---|---|
+| Identity lookup fails (timeout / network / parse / api_error) | **FAIL-OPEN** → default NEW USER, print the reason, send | An infrastructure hiccup must never block an invitation. Worst case: a partner gets the new-user body. |
+| Partner body file missing | **FAIL-CLOSED** → exit 1, send nothing | Sending "create your account" to someone who HAS one is a wrong email, not a late one. |
+
+The discriminator: **degraded-but-plausible output may ship; known-wrong output
+may not.** Same shape as the kind-errors / program-falls-back split. Anyone
+tempted to "make it consistent" by collapsing these has misread the table —
+they are consistent, on the axis that matters.
 
 ## Template contract (emsworth owns the words)
 
