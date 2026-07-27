@@ -165,21 +165,31 @@ function sendInvite(opts, callback) {
     var datasetDir = opts.datasetDir || process.cwd();
     var templateDir = opts.templateDir || __dirname;
 
-    function bail(msg) { return callback(new Error(msg)); }
+    // Every refusal carries a machine-readable err.code so a mounting route can
+    // map to a status without string-matching my prose (detroit gen-18).
+    // Codes: body_invalid | bad_email | config_error | no_session_identity |
+    //        template_missing | new_user_path_not_live | binding_failed |
+    //        birth_failed | ses_failed | redis_error | timeout
+    function coded(code, msg) { var e = new Error(msg); e.code = code; return e; }
+    function bail(code, msg) {
+        var e = new Error(msg);
+        e.code = code;
+        return callback(e);
+    }
 
-    if (!companyId) return bail('companyId required');
+    if (!companyId) return bail('body_invalid', 'companyId required');
     if (!inviteeEmail || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(String(inviteeEmail))) {
-        return bail('inviteeEmail required and must be a valid address');
+        return bail('bad_email', 'inviteeEmail required and must be a valid address');
     }
 
     var ctx = readContext(datasetDir);
-    if (doSend && !ctx.dataset) return bail('no dataset resolved — refusing to send. ' + (ctx.configError || 'portal-config.json has no "dataset" and TRUESHOT_DATASET is unset.'));
-    if (doSend && !ctx.corpProstan8) return bail('missing corpProstan8 — refusing to guess an inviting corp. ' + (ctx.configError || 'portal-config.json has no "corpProstan8".'));
+    if (doSend && !ctx.dataset) return bail('config_error', 'no dataset resolved — refusing to send. ' + (ctx.configError || 'portal-config.json has no "dataset" and TRUESHOT_DATASET is unset.'));
+    if (doSend && !ctx.corpProstan8) return bail('config_error', 'missing corpProstan8 — refusing to guess an inviting corp. ' + (ctx.configError || 'portal-config.json has no "corpProstan8".'));
     // George's ruling 2026-07-27: "they press the invite, so obviously they are
     // inviting — yes it is me if I am logged in." The person is the caller's to
     // supply from the session. No session identity, no send.
-    if (doSend && !opts.inviterProstan8) return bail('inviterProstan8 required on send — resolve it from the session, never from the request body');
-    if (doSend && !opts.inviterDisplay) return bail('inviterDisplay required on send');
+    if (doSend && !opts.inviterProstan8) return bail('no_session_identity', 'inviterProstan8 required on send — resolve it from the session, never from the request body');
+    if (doSend && !opts.inviterDisplay) return bail('no_session_identity', 'inviterDisplay required on send');
 
     var inviteHash = crypto.randomBytes(16).toString('hex');
 
@@ -190,12 +200,12 @@ function sendInvite(opts, callback) {
         // FAIL-CLOSED: no body for this audience => send nothing. Telling an
         // existing member to "create your account" is a WRONG email, not a late one.
         if (!fs.existsSync(file)) {
-            return bail((isPartner ? 'partner' : 'new-user') + ' body missing at ' + file + ' — refusing to send the wrong body');
+            return bail('template_missing', (isPartner ? 'partner' : 'new-user') + ' body missing at ' + file + ' — refusing to send the wrong body');
         }
         // FAIL-CLOSED: the new-user CTA points at a param register.html does not
         // parse yet. A dead link that binds nothing is worse than no invitation.
         if (doSend && !isPartner && !NEW_USER_PATH_READY) {
-            return bail('new-user path not live: register.html does not parse ?invite= yet (nashville). '
+            return bail('new_user_path_not_live', 'new-user path not live: register.html does not parse ?invite= yet (nashville). '
                       + 'Flip NEW_USER_PATH_READY once their handler ships.');
         }
 
@@ -203,7 +213,7 @@ function sendInvite(opts, callback) {
         var html, subject = ctx.sharerCorp + ' set up a portal for you';
         try {
             html = renderTemplate(file, { inviteeName: inviteeName, sharerCorp: ctx.sharerCorp, ctaUrl: ctaUrl });
-        } catch (e) { return bail(e.message); }
+        } catch (e) { return bail('template_missing', e.message); }
 
         var result = {
             inviteHash: inviteHash,
@@ -218,7 +228,7 @@ function sendInvite(opts, callback) {
         var AWS = require('aws-sdk');
         var secrets;
         try { secrets = JSON.parse(fs.readFileSync('d:/secrets/config.json', 'utf8')); }
-        catch (e) { return bail('cannot read d:/secrets/config.json: ' + e.message); }
+        catch (e) { return bail('config_error', 'cannot read d:/secrets/config.json: ' + e.message); }
         // Explicit credentials — NEVER AWS.config.loadFromPath in a mounted module.
         var ses = new AWS.SES({
             apiVersion: '2010-12-01',
@@ -232,19 +242,42 @@ function sendInvite(opts, callback) {
         var redisClient = opts.redisClient || Redis.createClient({ host: REDIS_HOST, port: REDIS_PORT });
         var ownsClient = !opts.redisClient;
         var finished = false;
+        // WATCHDOG. detroit gen-18: their socket timeout kills THEIR socket and
+        // cannot interrupt work already in flight in here, so the bound has to
+        // live on this side too. Default 20s; caller may set opts.timeoutMs.
+        // HONEST LIMIT: this bounds when the CALLER hears back, not when the work
+        // stops. If it fires after the jrec birth, the invite record exists
+        // (step=sent) and a send may still land — so the error says so, and the
+        // hash is returned for reconciliation rather than swallowed.
+        var timeoutMs = typeof opts.timeoutMs === 'number' ? opts.timeoutMs : 20000;
+        var watchdog = setTimeout(function () {
+            var e = new Error('invite timed out after ' + timeoutMs + 'ms. '
+                + 'Work may still be in flight; jrec:invite:' + inviteHash
+                + ' may exist (30d TTL) and an email may still be delivered. Do not blind-retry — check the Sent page (doctype=invite) first.');
+            e.code = 'timeout';
+            e.inviteHash = inviteHash;
+            done(e);
+        }, timeoutMs);
+        if (watchdog.unref) watchdog.unref();   // never hold the host process open
+
         function done(err, res) {
             if (finished) return;
             finished = true;
+            clearTimeout(watchdog);
             if (ownsClient) { try { redisClient.quit(); } catch (e) {} }
             callback(err, res);
         }
-        redisClient.on('error', function (e) { done(new Error('redis: ' + e.message)); });
+        redisClient.on('error', function (e) {
+            var re = new Error('redis: ' + e.message);
+            re.code = 'redis_error';
+            done(re);
+        });
 
         function withDb(next) {
             if (!ownsClient) return next();
             redisClient.on('connect', function () {
                 redisClient.select(REDIS_DB, function (selErr) {
-                    if (selErr) return done(new Error('redis SELECT ' + REDIS_DB + ' failed: ' + selErr.message));
+                    if (selErr) return done(coded('redis_error', 'redis SELECT ' + REDIS_DB + ' failed: ' + selErr.message));
                     next();
                 });
             });
@@ -269,7 +302,7 @@ function sendInvite(opts, callback) {
                     source: 'invite'
                 });
                 jrec.upsert(redisClient, 'perportal', [ctx.dataset, p8], 'senath', ops, function (ppErr) {
-                    if (ppErr) return done(new Error('perportal binding failed — send aborted (the email would promise access never granted): ' + ppErr.message));
+                    if (ppErr) return done(coded('binding_failed', 'perportal binding failed — send aborted (the email would promise access never granted): ' + ppErr.message));
                     result.bound = true;
                     next();
                 });
@@ -292,7 +325,7 @@ function sendInvite(opts, callback) {
                 }, function (jrecErr) {
                     // Birth failure ABORTS: an untracked invitation is the one
                     // failure this design exists to prevent.
-                    if (jrecErr) return done(new Error('jrec:invite birth failed — send aborted: ' + jrecErr.message));
+                    if (jrecErr) return done(coded('birth_failed', 'jrec:invite birth failed — send aborted: ' + jrecErr.message));
 
                     function sesTag(v) { return String(v == null ? '' : v).replace(/[^A-Za-z0-9_-]/g, '_').substring(0, 256); }
                     var tagPairs = [
@@ -318,7 +351,7 @@ function sendInvite(opts, callback) {
                         RawMessage: { Data: rawEmail }
                     }, function (sesErr, data) {
                         if (sesErr) {
-                            return done(new Error('SES send failed: ' + sesErr.code + ' - ' + sesErr.message
+                            return done(coded('ses_failed', 'SES send failed: ' + sesErr.code + ' - ' + sesErr.message
                                 + ' (NOTE: jrec:invite:' + inviteHash + ' was already born, step=sent; 30d TTL will expire it)'));
                         }
                         result.messageId = data.MessageId;
