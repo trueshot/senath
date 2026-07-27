@@ -324,3 +324,29 @@ are not portal-visible. Nobody chose that.
 NOT URGENT (nothing in the closed exposure ruling turns on it) but it is MINE, and
 better decided than inherited. DO NOT invent a filter on senath authority — it is
 a George/business ruling.
+
+### ★★ PROCEDURAL OBLIGATION ON THE WRITE PATH — THE CONTENT TEST
+(libertyville gen-4, RULED + DEPLOYED 2026-07-27. This is a standing check, not
+advice.)
+
+vernal + libertyville ratified that an invitation confers the STANDARD SET
+(documents + orders) with no ceremony. The justification for documents membership
+was a CONTENT test — a domain qualifies when its content is the invitees OWN
+transaction plus facts they would learn operationally from it. Documents passed
+THAT TEST ON THE BASIS OF WHAT THE FOLDERS CONTAINED WHEN IT WAS APPLIED.
+
+**Therefore: depositing a NEW DOCUMENT TYPE silently widens what every existing
+invitation already conferred — no code change, no decision at any read layer, and
+the test that justified membership is never re-applied.** libertyville extension
+protocol governed adding a domain KEY; it did not cover a domains CONTENT widening
+under an existing key. That hole is now closed and the policy point is named:
+**for documents it is senath write path, solely.**
+
+BEFORE DEPOSITING A NEW DOCUMENT TYPE, apply the test:
+  Does it carry (a) customer identity as such, (b) pricing, (c) margins, or
+  (d) another partys terms or contacts?
+  If YES on any -> STOP. Take it to vernal + libertyville BEFORE it ships.
+  If NO -> it ships on the existing ratification.
+Pre-cleared by libertyville as they stand: BOL, PASSING.
+Do NOT build a read-layer filter for this — vernal ruled type-agnostic reads are
+THE DESIGN. The check lives here, at the write, or nowhere.
