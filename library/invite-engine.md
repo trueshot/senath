@@ -201,13 +201,58 @@ Node's require cache holds the loaded module. Full procedure is in the export
 block at the bottom of invite.js. Flip only on nashville's DIRECT confirmation
 that register.html parses `?invite=` and binds on completion.
 
-## Live state / what remains
+## ★ THE THREE BIRTH PATHS (first-writer-wins — a rule about ALL of them)
 
-- BUILT + dry-run verified (new-user path renders correctly end to end).
-- NOT deployed to a prey. NOT wired to portland's button.
-- `invite-template-partner.html` does not exist yet — emsworth owes body 2.
-- nashville's `?invite=<hash>` handling: CTA carries it now; harmless before
-  nashville ships handling, works retroactively after.
+`jrec:perportal` bindings are born by THREE code paths in THREE files that
+share no line. Anything materialized/changed at binding-birth must land in ALL
+THREE in one pass, or it is silently missing and the record LOOKS complete:
+
+| # | path | file | fires when |
+|---|---|---|---|
+| 1 | registration | nashville `i_registration.js` | person registers (incl. via `?invite=`) — `source:'registration'` |
+| 2 | document send | senath `sendEmail.js` (~line 908) | doc emailed to an already-registered person — `source:'send'` |
+| 3 | invitation | senath `invite-engine/invite.js` | partner invited (pre-binding before the email) — `source:'invite'` |
+
+Scopes are **initOnly/HSETNX: whichever path fires FIRST owns the field
+forever** (incl. `source`). Consumers must test MEMBERSHIP of source in
+[registration, send, invite], never equality — nashville's e2e hardcoded one
+value and would have failed a correct system (fixed 07-27; ruled onto the
+schema by libertyville).
+
+## Live state (2026-07-28 — the walk that made it real)
+
+- **DEPLOYED + LIVE end to end**: engine on willis/willdev + mirrors; detroit's
+  gated route `POST /api/v1/portal/invite/:dataset` live (session-gated,
+  inviter from gate-resolved identity only, body rejects any inviter key);
+  portland's Invite button wired and calling it.
+- **`NEW_USER_PATH_READY = true`** (flipped 07-28 on nashville's DIRECT
+  confirmation). Semantics: `false` = cold sends REFUSE (`new_user_path_not_live`)
+  because a `?invite=` link would land on a form that binds nothing; `true` =
+  nashville's handler consumes `senath_dataset`+`senath_companyId` off the
+  record, prefills, validates FAIL-CLOSED, births the binding, closes the
+  invite. **Flip requires deploy + TrueAPI RESTART (require cache).**
+- **Cold chain PROVEN on real substrate** via QA walks (invite → open →
+  register → bind → login; negatives too: reuse 400, bogus hash 400). Records
+  `b969defc` (nashville seed) and `08ee3c26` ("George Proof Walk" QA seed) show
+  the full journey with the 12-field shape.
+- Both bodies deployed, honest against the live register flow (emsworth's
+  "whole form" claim corrected 07-28 — the flow opens with phone+SMS).
+- Three schema defects were caught by validation BEFORE the first record:
+  `senath_lastInviteAt` unowned (press 2), `inviterPersonP8/Name` unratified
+  (press 3), dataset/companyId missing for nashville's handler. All fixed;
+  schema amendments now senath-authored + libertyville-notified (George's
+  authority ruling, 07-28, his words in the schema rationale).
+
+## ★★ THE ONE UNWALKED LEG — DO NOT FORGET IT
+
+**The engine's SES SEND has NEVER FIRED.** No invitation email has ever left
+through invite.js. Every proven journey above began from a SEEDED record.
+Unproven until a real press: the SES call itself, the raw-mail assembly for
+this path, delivery, and the Sent-page row (`doctype=invite` tag). The partner
+pre-binding HAS fired once for real (press 3, scope_PROMIS on 824djvop) —
+the birth+send half aborted on the schema defect. First real send: watch, in
+order, (1) jrec:invite:<hash> step=sent, (2) perportal scope if partner,
+(3) SES delivery on the Sent page, (4) the inbox.
 
 ## Related
 

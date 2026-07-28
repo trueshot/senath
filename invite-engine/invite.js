@@ -45,7 +45,7 @@ var REDIS_DB = 8;
 // 2026-07-27. A new-user link lands on the generic form and a completion binds
 // nothing. NEW_USER_PATH_READY stays false until their handler ships; with it
 // false, sendInvite refuses new-user sends rather than sending a dead link.
-var NEW_USER_PATH_READY = false;
+var NEW_USER_PATH_READY = true;   // FLIPPED 2026-07-28: nashville CONFIRMED DIRECT (not relayed) — ?invite= handler live+QA-walked: open stamp, fail-closed registration, binding birth, invite close, negatives verified.
 function ctaFor(isPartner, inviteHash) {
     return isPartner
         ? 'https://producestandards.org/signin.html'
@@ -306,7 +306,16 @@ function sendInvite(opts, callback) {
                 if (!isPartner || !identity.prostan8) return next();
                 var p8 = String(identity.prostan8).replace(/^u_/, '');   // verify API returns u_<id>
                 var scopeField = 'scope_' + String(companyId).replace(/[^A-Za-z0-9_]/g, '_');
-                var ops = { set: { senath_lastInviteAt: nowIso }, initOnly: {}, initialCoherence: { tier: 'registered' } };
+                // senath_lastSendAt, NOT senath_lastInviteAt: the schema owns
+                // exactly [senath_lastSendAt, scope_*] for me, and jrec ownership
+                // validation rejects the whole write on any unowned field — which
+                // aborted George's FIRST REAL SEND (2026-07-28, caught loud and
+                // atomic by the fail-closed rule; nashville diagnosed it in
+                // minutes because the error named the field). An invite email IS
+                // a send, and the invite-specific fact is already recorded where
+                // it belongs: scope_*.source = 'invite' + boundAt. A dedicated
+                // lastInviteAt field needs a libertyville schema amendment first.
+                var ops = { set: { senath_lastSendAt: nowIso }, initOnly: {}, initialCoherence: { tier: 'registered' } };
                 ops.initOnly[scopeField] = JSON.stringify({
                     companyId: companyId, pulpId: null, role: 'partner', boundAt: nowIso,
                     relationshipKey: 'jrec:portal:' + ctx.dataset + ':' + companyId,
@@ -329,6 +338,13 @@ function sendInvite(opts, callback) {
                         senath_inviterPersonName: opts.inviterDisplay,
                         senath_inviteeEmail:     inviteeEmail,
                         senath_inviteeName:      inviteeName,
+                        // dataset + companyId: what nashville's registration
+                        // handler binds a COLD invitee to. Without them a new
+                        // user registers and cannot be scoped — the empty-portal
+                        // outcome one layer deeper (nashville gen-4, 2026-07-28).
+                        // inviterCorp is a DISPLAY name and cannot serve.
+                        senath_dataset:          ctx.dataset,
+                        senath_companyId:        companyId,
                         senath_sentAt:           nowIso,
                         senath_channel:          channel
                     },
