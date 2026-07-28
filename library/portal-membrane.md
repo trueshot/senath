@@ -289,11 +289,24 @@ means MY WRITE IS THE SOLE POLICY POINT. If a type should ever be non-portal-vis
 the decision must live at the write (or someone adds a listing filter and says so).
 Do NOT invent such a filter on senath authority: it is a George/business ruling.
 
-What is actually in the folders (Sent-page extract, WILLIS, tagged window only):
-  57 messages, 100% company-tagged -> all copied.  bol 21 | document 19 | invoice 16 | po 1
-  PASSINGS: ZERO. lakeland-s passings-to-external finding is a DIFFERENT population —
-  not through this path, not in the membrane. Caveat: pre-7/22 sends are untagged and
-  excluded as legacy, so this is what is VISIBLE, not proof of what EXISTS.
+★ MEASURED POPULATION — WHOLE MEMBRANE, 2026-07-28 (supersedes an earlier WRONG
+figure taken from the 57-message SES tag window, which reported 4 types and ZERO
+passings. The membrane has accumulated since June; the tag window starts 07-22.
+I had a bounded sample and described a population.):
+  66 companies, 982 PDFs
+  invoice 340 | passing 337 | bol 150 | saleconf 95 | repackreturn 28 |
+  po 14 + purchaseorder 3 | rpkretrn 10 | return 3 | drivecheck 1 | frconf 1
+NINE+ types entered a partner-visible surface with no content test ever applied.
+Pre-cleared by libertyville: BOL, PASSING. UNASSESSED: saleconf, repack/returns,
+po, drivecheck, frconf — and invoice (pricing; likely passes on the own-transaction
+limb, but that is libertyville/vernal to rule, not senath).
+
+HOW TO RESCAN (cheap, filenames only, no file reads):
+  //15.30.60.44/canopylake/inode3/82/82vlsz7s/local_c/server/produceflow/portals/outgoing
+  (bridge export — reachable from georg. Do NOT use C:/canopylake on georg: it is a
+   STALE PARTIAL view with an empty local_c/server, per detroit gen-18.)
+  The UNC in portal-config.json is \172.31.24.120... which is NOT reachable from
+  georg; the bridge path above is the same tree.
 
 EXTENSION SYMMETRY: my write is PDF-only (destPath always .pdf) and detroit byte route
 serves .pdf only. detroit listing is format-agnostic, so a NON-PDF dropped in a folder
