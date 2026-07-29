@@ -36,10 +36,11 @@ capture). A status table that lies is worse than none.
 | CTA fork | BUILT (nashville's call). Partners → `signin.html`, not the registration form. |
 | Partner pre-binding | BUILT. Scope written FAIL-CLOSED before the email leaves. |
 | Deployed to preys | **YES** — 07-27: willis, willdev + mirrors wey, farmwey. **DORMANT**: no route registered, cannot send. |
-| detroit's gated route | BUILT, not registered. Held on vernal's gate ruling. |
-| **New-user sends** | **REFUSED** (`new_user_path_not_live`) until register.html parses `?invite=` — nashville + George. |
-| **portland's Invite button** | **NOT WIRED.** Contract is stable; only *who gets a 403* can still move. |
-| **A human can send one** | **NO.** ← the only row that matters. |
+| detroit's gated route | **LIVE** (as of 07-28): `POST /api/v1/portal/invite/:dataset`, vernal ruled invite grant-class, allowlist = George only. |
+| New-user sends | **LIVE** (07-28): `NEW_USER_PATH_READY=true` on nashville's direct confirmation; their `?invite=` handler is live + QA-walked. |
+| portland's Invite button | **WIRED + LIVE** (07-28), capability read shows both paths open. |
+| **The engine's SES send** | **NEVER FIRED** (as of 2026-07-29). Cold chain proven only from SEEDED records. ← the only row that matters. |
+| First real send | With George: choose invitation #1 recipient (portland's board flag, seeley's ranking: Sarah Peters RJSLOG vs Jay Delk DELKME). |
 
 ## Usage (CLI)
 
