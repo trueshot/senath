@@ -167,6 +167,10 @@ function group(rawEvents) {
     if (!m.date) m.date = tag(tags, 'date');
     if (!m.who) m.who = tag(tags, 'who');
     if (!m.doc) m.doc = tag(tags, 'doc');
+    // Invite sends stamp invite=<hash> (sendInvite.js). Captured so the T1f
+    // bounce-stamping phase below can find the jrec:invite record; also rides
+    // into the dataset JSON so the Sent page can link a row to its invite.
+    if (!m.invite) m.invite = tag(tags, 'invite');
 
     var b = det.bounce || {};
     var bounced = (b.bouncedRecipients || [])[0] || {};
@@ -202,6 +206,155 @@ function statusOf(m) {
   if (t.Open) return 'opened';
   if (t.Delivery) return 'accepted';
   return 'sent';                     // async: outcome legitimately not in yet
+}
+
+// ------------------------------------- T1f: invite bounce stamping (db 8)
+//
+// A bounced INVITE otherwise reads as normally-pending forever: the invite
+// record (jrec:invite:<hash>, ElastiCache db 8) never learns the bounce.
+// detroit's GET /api/v1/portal/invites already forwards senath_* fields
+// verbatim when present; this stamps them. (senath gen-16, 2026-08-14 —
+// the fix specified in --facet-email-tracking since gen-13.)
+//
+// Posture, matching this file's contract:
+//   - BEST-EFFORT, NEVER FATAL: runs AFTER the JSON files are written; any
+//     redis failure logs and exits 0. The extraction is the product; the
+//     stamp is a bonus. A stamping bug must never stale the Sent page.
+//   - ZERO DEPENDENCIES: a ~60-line RESP client over node's net module.
+//     Monkey's node_modules contents are unverifiable from here — a require
+//     that might not resolve is a silent skip waiting to happen.
+//   - GUARDED: HSET fires ONLY if the key EXISTS. Invite records carry a
+//     TTL; an unguarded HSET on an expired hash would resurrect it as a
+//     TTL-less orphan. HSET does not touch TTL on live keys.
+//   - IDEMPOTENT: re-runs re-stamp identical values; harmless.
+//
+// Host: in-VPC ElastiCache endpoint (this runs ON MONKEY). Override with
+// SENATH_REDIS_HOST/SENATH_REDIS_PORT (georg testing rides the local
+// 127.0.0.1:16379 tunnel, same one libertyville inspect.js uses).
+
+var REDIS_HOST = process.env.SENATH_REDIS_HOST || 'my-redis-cluster.3jytjd.0001.use1.cache.amazonaws.com';
+var REDIS_PORT = parseInt(process.env.SENATH_REDIS_PORT || '6379', 10);
+
+function makeRedis(host, port, onDead) {
+  var net = require('net');
+  var sock = net.connect({ host: host, port: port });
+  var pending = [];            // reply callbacks, FIFO
+  var buf = Buffer.alloc(0);
+  var dead = false;
+  function die(err) {
+    if (dead) return;
+    dead = true;
+    try { sock.destroy(); } catch (e) {}
+    var p = pending; pending = [];
+    p.forEach(function (cb) { cb(err || new Error('redis connection lost')); });
+    if (onDead) onDead(err);
+  }
+  // 30s idle timeout: on Monkey (direct in-VPC endpoint) replies are ms and
+  // this is pure failure detection — but the georg test tunnel's COLD remote
+  // leg measured 9.9s to first reply (2026-08-14), which killed a 10s timeout
+  // at the edge. Idle-based: resets on each reply.
+  sock.setTimeout(30000, function () { die(new Error('redis timeout (' + host + ':' + port + ')')); });
+  sock.on('error', die);
+  sock.on('close', function () { die(new Error('redis closed')); });
+  sock.on('data', function (d) {
+    buf = Buffer.concat([buf, d]);
+    for (;;) {
+      var r = parseOne();
+      if (!r) break;                       // incomplete — wait for more bytes
+      var cb = pending.shift();
+      if (cb) cb(null, r.v);
+    }
+  });
+  // Parse ONE complete reply off buf, or return null if incomplete.
+  // Handles +simple, -error(as value), :int, $bulk. Arrays not needed here.
+  function parseOne() {
+    var nl = buf.indexOf('\r\n');
+    if (nl === -1) return null;
+    var t = String.fromCharCode(buf[0]);
+    var head = buf.slice(1, nl).toString();
+    if (t === '+' || t === '-' || t === ':') {
+      buf = buf.slice(nl + 2);
+      return { v: t === ':' ? parseInt(head, 10) : (t === '-' ? new Error(head) : head) };
+    }
+    if (t === '$') {
+      var n = parseInt(head, 10);
+      if (n === -1) { buf = buf.slice(nl + 2); return { v: null }; }
+      if (buf.length < nl + 2 + n + 2) return null;
+      var s = buf.slice(nl + 2, nl + 2 + n).toString();
+      buf = buf.slice(nl + 2 + n + 2);
+      return { v: s };
+    }
+    die(new Error('unexpected RESP type: ' + t));
+    return null;
+  }
+  return {
+    send: function (args, cb) {
+      if (dead) return cb(new Error('redis dead'));
+      var out = '*' + args.length + '\r\n';
+      args.forEach(function (a) {
+        var s = String(a);
+        out += '$' + Buffer.byteLength(s) + '\r\n' + s + '\r\n';
+      });
+      pending.push(cb);
+      sock.write(out);
+    },
+    end: function () { dead = true; try { sock.end(); sock.destroy(); } catch (e) {} }
+  };
+}
+
+function stampInviteBounces(messages, done) {
+  var stamps = [];
+  messages.forEach(function (m) {
+    if (!m.invite) return;
+    var b = null;
+    m.events.forEach(function (e) { if (e.type === 'Bounce') b = e; });
+    if (!b) return;
+    // detail is 'bounceType/bounceSubType — diagnostic' (see group()).
+    var parts = String(b.detail || '').split(' — ');
+    stamps.push({
+      key: 'jrec:invite:' + m.invite,
+      bounceType: parts[0] || 'unknown',
+      diagnostic: parts.slice(1).join(' — ') || 'no diagnostic',
+      at: b.time || ''
+    });
+  });
+  if (!stamps.length) {
+    console.log('invite bounce stamping: no bounced invites in window');
+    return done();
+  }
+  console.log('invite bounce stamping: ' + stamps.length + ' bounced invite(s) found');
+  var finished = false;
+  function finish() { if (!finished) { finished = true; done(); } }
+  var r = makeRedis(REDIS_HOST, REDIS_PORT, function (err) {
+    console.error('invite bounce stamping skipped (non-fatal): ' + (err ? err.message : 'connection lost'));
+    finish();
+  });
+  r.send(['SELECT', '8'], function (err) {
+    if (err) return finish();
+    var i = 0, stamped = 0, expired = 0;
+    (function next() {
+      if (i >= stamps.length) {
+        console.log('invite bounce stamping: ' + stamped + ' stamped, ' + expired + ' expired/absent (guard skipped)');
+        r.end();
+        return finish();
+      }
+      var s = stamps[i++];
+      r.send(['EXISTS', s.key], function (e2, n) {
+        if (e2) return finish();
+        if (n !== 1) { expired++; return next(); }   // TTL-expired or absent — never resurrect
+        r.send(['HSET', s.key,
+                'senath_bounced', 'true',
+                'senath_bounceType', s.bounceType,
+                'senath_bounceDiagnostic', s.diagnostic,
+                'senath_bouncedAt', s.at], function (e3) {
+          if (e3) return finish();
+          stamped++;
+          console.log('  stamped ' + s.key + ' (' + s.bounceType + ')');
+          next();
+        });
+      });
+    })();
+  });
 }
 
 // ------------------------------------------------------------------- writing
@@ -321,6 +474,25 @@ function main() {
       return d.dataset + '(' + d.messages + ')';
     }).join(', ') || '(none)');
     console.log('output: ' + OUT_DIR);
+
+    // T1f: stamp bounced invites onto their jrec records. Runs LAST — the
+    // JSON files above are already safe on disk; this phase is best-effort.
+    // --stamp-test <hash>: inject a synthetic bounced invite so the redis
+    // path (connect/SELECT/EXISTS/guard) can be live-verified with a
+    // nonexistent hash — the EXISTS guard skips it, nothing is written.
+    var testHash = arg('stamp-test', null);
+    if (testHash) {
+      ours = ours.concat([{ invite: testHash,
+        events: [{ type: 'Bounce', detail: 'Synthetic/Test — stamp-test flag', time: generatedAt }] }]);
+    }
+    stampInviteBounces(ours, function () {
+      // Natural exit so stdout/stderr flush fully (process.exit on Windows
+      // can truncate buffered pipe output — observed live 2026-08-14). The
+      // unref'd failsafe still guarantees a leaked socket cannot hold the
+      // schtask open past 5s.
+      process.exitCode = 0;
+      setTimeout(function () { process.exit(0); }, 5000).unref();
+    });
   });
 }
 
