@@ -1,4 +1,106 @@
-(verified gen-5, updated gen-8) Portal Membrane — Document-Sharing Directory Structure
+(verified gen-5, updated gen-8, THREE-AREAS REWRITE gen-14 as of 2026-08-07) Portal Membrane — Document-Sharing Directory Structure
+
+## ★ AS OF 2026-08-07 — THREE-AREAS LAYOUT IS LIVE (read this before the rest)
+
+George ruled and senath executed same day (design: c:/clients/inola/
+proposal-three-areas-three-links.md rev 2; George GO + "migrate" verbatim in
+senath gen-14 session). Everything below this section describing a FLAT
+outgoing/<CO>/ is historical.
+
+CURRENT SHAPE (willis, LIVE + migrated — 73 portals, 1,323 documents):
+  portals/outgoing/
+    _portals.json              dataset rollup (Regime A index; operator-level)
+    <CO>/
+      documents/               partner-visible membrane. ALL documents +
+        _manifest.json         aprons live here now (1,323 pairs migrated
+        {date}_{who}_{ext}_..  2026-08-07; zero left flat, zero lost)
+      appdata/                 app working files (114 orphan thumbnails
+                               quarantined here at migration; detroit thumb
+                               route writes here)
+      access/                  RESERVED, EMPTY — uTERA Regime-U projection,
+                               fills only when George rules the frozen design
+
+REGIME RULE (inola+George, the keeper): Regime U = uTERA-written authority
+(access/, .link.json, chimayo only). Regime A = application files (documents,
+aprons, manifests) — NEVER authority. No app file may be an authority record.
+
+MANIFEST CONTRACT (senath owns; three conformed writers: sendEmail.js
+live-send, portal-doc-writer.js portal-generate, lakeland
+attachment-doc-writer manual-drop):
+  - documents/_manifest.json per company; entries keyed by pdf filename =
+    idempotent read-modify-write; .tmp+rename; NON-FATAL (never blocks a
+    send); folder is TRUTH, manifest is rebuildable INDEX.
+  - ABSENCE-PRESERVING (portland's catch 08-07): provenance fields appear
+    IFF the apron carries them — "recipients[] present IFF emailed" answers
+    identically from apron and manifest. Display/sort convenience = `when`
+    (first of sentAt/generatedAt/droppedAt).
+  - _portals.json rollup = sweep-maintained (allowed to lag; writers do NOT
+    update it — race-free by design).
+
+WRITE PATH: both my writers gate on portal-config.json "documentsSubdir":
+true (LIVE on willis since 08-07; willdev has NO portal-config = no
+canopylake writes there). sendEmail writes UNC directly — there is NO prey
+junction (a gen-6 MEP diagram claimed one and misled a reviewer; annotated).
+The PHYSICAL wall = effingham's per-company scoped SMB shares (their
+portal-wall-mechanism.md) — DECISION on George's board. Rationale CORRECTED
+2026-08-08 (effingham retraction after live tests with George): the earlier
+"dot-dot escapes a reparse point" claim was WRONG in mechanism — Windows
+normalizes .. lexically on the CLIENT before any junction or SMB server sees
+the path. The correct, stronger argument: a junction (or any client-side
+path) is convenience, not control — it grants nothing and restricts nothing;
+enforcement exists only server-side at the Samba share root. Additionally
+junction-to-network is dead on modern Windows (mklink /J fails on UNC and
+mapped-drive targets; only /D symlinks work); W2K3 prey untested as of
+2026-08-08. And bridge-0's broad [canopylake] share is guest ok = yes with
+no valid users — so the wall = scoped shares PLUS auth partition. Constraint
+from this file's owner: the auth partition must preserve the prey send
+context's UNC write to outgoing/ (sendEmail.js), or sends fail.
+
+MEMBRANE NAME-RECOGNITION CONTRACT v1 (senath 2026-08-11, binding on ALL
+membrane writers — born from lakeland's re-drop double-wrap, MELONO):
+- A filename is ALREADY membrane-named iff it matches ^\d{8}_[^_]+_[^_]+_.+
+  ({date}_{who}_{ext|attach}_{stem}).
+- NO writer may wrap a name that already matches — regardless of whose
+  writer produced it.
+- Receiving an already-membrane-named file: same name exists in target
+  documents/ → keep existing bytes, merge apron (recipients/dropCount++),
+  update manifest entry. Not exists → file under its ORIGINAL name
+  unchanged; write apron with your ownerSource.
+- Only non-matching names get wrapped with the receiving writer's prefix.
+- False-positive risk (user file coincidentally matching) is benign: it
+  files as-is under its own name.
+
+TOOLS (senath repo, all georg-runnable over the 15.30.60.44 bridge —
+bridge is georg-READ-WRITE for canopylake):
+  tools/build-portal-manifests.js [--dry-run|--only CO|--base P]  index sweep
+  tools/migrate-portal-documents.js [same flags]   the one-time migration
+  tools/cleanup-perportal-sendborn.js [--live]     db8 send-born scope purge
+    (RAN 2026-08-07: 5 keys deleted incl Susi 4tdh4tli 23-send + George's own
+    bk6l2u8y; Will bjynfi2b kept PROMIS invite only; backup =
+    tools/backups/perportal-backup-2026-08-07T15-55-21-906Z-LIVE.json)
+
+GOTCHAS PAID FOR:
+  - NEVER index in the same breath as bulk SMB renames — the S3-gateway dir
+    listing LAGS; migration undercounted 1085/1323 until re-swept settled.
+  - MANIFEST SWEEP DOES NOT PRUNE DELETIONS (senath gen-16, 2026-08-12):
+    build-portal-manifests.js merge-preserves EVERY prior entry (its merge
+    overlays the old manifest unconditionally), so a file that was DELETED
+    leaves a PHANTOM entry — the portal lists a document that 404s on click.
+    Pair any deletion from a portal folder with a manifest prune:
+    tools/prune-manifest-phantoms.js (fast listing to find candidates, direct
+    stat to confirm ENOENT before pruning, self-healing — a wrong prune is
+    rebuilt by the next sweep). Removing the entry breaks the copy-forward
+    chain, so the fix is durable. Found+fixed exactly 2 tree-wide: FARMER +
+    MELONO (gen-15 deleted the double-wrap BYTES but not the entries); full
+    74-portal audit clean after.
+  - jrec:portal is DEMOTED (display reads manifests) but sendEmail still
+    writes it as a harmless log; jrec:perportal is the INTERIM membership
+    store (cleaned, frozen against send path ONLY — registration + invite
+    still write) until George's four uTERA rulings land.
+  - vernal ruled the cleanup's deletion (vs status-stamp revocation) a
+    legitimate exception — dated note in vernal's portal-authority facet;
+    no-removal still governs legitimate bindings.
+
 
 The portal lets one CORP share documents with another through a uTERA
 membrane. It replaces the legacy anonymous token-cache
@@ -16,10 +118,16 @@ willdev CORP — verified 2026-05-22 via chimayo /read-json:
   local_c children: server (Directory), service (Directory), dbf/app/prg (links)
   server/ exists as a Directory inode but is EMPTY — nothing below it yet.
 
-server_f (Drive F) mirrors local_c/server/ — chimayo materializes it as a
-REAL duplicate directory (identical .inode.json), not a symlink, due to
-S3 Files SMB constraints. Mirroring is by convention. Content under
-portals/ is reachable via both Drive C and Drive F paths.
+server_f (Drive F) IS local_c/server/ via POSIX symlink, created Linux-side
+on the bridge (bridgeport:--facet-symlinks). [CORRECTED 2026-08-09 per
+George's ruling 2026-08-08, relayed by inola gen-6 (LINK/MAP drift
+cleanup): maps/links are POSIX symlinks; duplicate-dir materialization was
+chimayo DRIFT and will never be ratified. The old claim here — "real
+duplicate directory due to S3 Files SMB constraints" — was wrong: the SMB
+constraint was only ever "cannot CREATE symlinks over SMB from Windows",
+not "no symlinks". Current disk still shows duplicate dirs = drift UNDER
+REMEDIATION (sweep scheduled post-client, George directing with chimayo).]
+Content under portals/ is reachable via both Drive C and Drive F paths.
 
 ## The structure
 
@@ -78,12 +186,14 @@ makes the rules. See atlanta / inola / cirrus --facet-membranes, Doc 04.
 - The prey server (Hawk, Windows Server 2003) maps the bridge SMB share:
     net use X: \\172.31.24.120\canopylake /user:smbuser <pw>
   smbuser is the canonical credential; guest is W2K3 fallback only.
-- An NTFS junction on the prey's local disk redirects a local path to the
-  canopylake path:
+- [HISTORICAL PLAN — NEVER DEPLOYED, and REFUTED 2026-08-08: effingham's
+  live tests show mklink /J fails on both UNC and mapped-drive targets on
+  modern Windows ("Local volumes are required"); W2K3 untested. The deployed
+  writer uses direct UNC — see WRITE PATH at top of this file.]
+  The old plan was: NTFS junction on the prey's local disk →
     mklink /J D:\clients\willdev\portal\{recipient}  X:\...\outgoing\{recipient}
-  Junctions scale (38,000+ fine). See effingham:--facet-junctions.
-- sendEmail.js writes a plain fs.writeFileSync to the junction'd path.
-  Zero new code.
+  with sendEmail.js writing plain fs.writeFileSync to the junction'd path.
+  See effingham:--facet-junctions (corrected 08-08).
 - Writing document bytes into an ALREADY-EXISTING directory is a direct
   SMB write. All writes go via SMB through the bridge — never the S3 API
   (creates root:root), never NFS. See effingham:--facet-posix-ownership.
@@ -147,7 +257,18 @@ using PORTLAND'S PORTAL CONVENTION (portland:--facet-portal-build):
   {date}_{who}_{ext}_{srcFileNoExt}.pdf          one copy per document
   {date}_{who}_{ext}_{srcFileNoExt}.email.json   the APRON
 Apron JSON: {sentAt, docType, docName, load, deal(abc), owner(companyId),
-ownerSource:'live-send', sourcePdf, recipients:[{email,sentAt}], sendCount}.
+ownerSource:'live-send', sourcePdf, record, recipients:[{email,sentAt}], sendCount}.
+RECORD vs SOURCEPDF (George-approved add-before-share contract, willdev
+ADD-SHARE-CONTRACT.md §3, 2026-08-12): 'record' = the prnthist path this
+projection was projected from — the CANONICAL traceability field across ALL
+membrane writers. 'sourcePdf' is its live-send LEGACY ALIAS, identical
+semantics. Readers use record, fall back to sourcePdf. sendEmail.js
+dual-writes both since 2026-08-12 (deployed all mirrors) and backfills
+record on legacy aprons at re-send. Additive apron fields propagate to
+NEITHER the manifest (writers copy an explicit field list) NOR partners
+(detroit projects an explicit field set) — record staying internal is by
+design; projecting it to partners would be a deliberate detroit change
+routed through senath first.
 RE-SEND of the same document: PDF skipped if present, apron MERGED
 (recipient appended, sendCount++). The portal page renders FROM APRONS —
 a PDF without an apron is invisible to the portal UI. date/who/ext come
@@ -156,6 +277,94 @@ ownerSource:'live-send' distinguishes my per-send writes from portland's
 batch backfill ('log-correlation' / 'json-abc+log-routing').
 Records senath_canopylakeSubpath on the portal jrec. Non-fatal: any
 failure is logged and skipped; S3 + jrec + SES still complete.
+
+## APRON ownerSource CONTRACT — THREE WRITERS, ONE READER (senath gen-13, 2026-08-04)
+(This supersedes the single-writer 'live-send vs backfill' note just above.)
+
+Every file in outgoing/<companyId>/ carries a paired {name}.email.json APRON;
+the portal renders FROM aprons (a file without an apron is invisible). As of
+2026-08-04 there are THREE writers into outgoing/, all sharing ONE apron
+convention senath owns. Discriminator = ownerSource. portland (the SINGLE reader)
+renders the human LABEL off ownerSource, NEVER off field presence.
+
+  live-send       sendEmail.js copyPdfToCanopylake (emailed doc). HAS
+                  recipients[]+sentAt+sendCount. label 'Sent to you'.
+  portal-generate portal-doc-writer.js fileGeneratedDoc() — doc generated in the
+                  portal. NO recipients[]; generatedBy+generatedAt+generationCount.
+                  label 'Generated'. (chain: detroit POST /api/v1/portal/doc/generate
+                  -> highlands render -> this writer, WRITE-FIRST then stream.)
+                  ★ ADD-BEFORE-SHARE since 2026-08-12 (pilot-verified, e1dea828):
+                  fileGeneratedDoc now runs render->ADD->PROJECT->stream through
+                  lakeland's add-writer.js — record minted FIRST in prnthist
+                  (loads/prnthist/<load>/<date>/<who>/gen/ + upload/{N}.json),
+                  membrane projection {date}_{who}_gen_{load}_{base}_{n}.pdf
+                  written FROM the record by project() (which enforces this
+                  apron family per the locked interface). Fatal-before-stream
+                  on both legs. Regen: byte-identical dedups (generationCount++),
+                  changed bytes = new record + new _n projection. Path-form
+                  seam CLOSED same day (lakeland): add-writer composes record/
+                  derivedFrom from its own coords in dataset-relative forward-
+                  slash form (loads/prnthist/...), unified with the live-send
+                  dual-write — readers hard-code ONE form. (Armed from
+                  detroit's next bounce; the 12:17Z pilot artifacts predate it
+                  and carry the absolute form — named litter, not the pattern.)
+  manual-drop     lakeland attachment-doc-writer.js — operator hand-dropped a file
+                  (images incl., real extension kept). NO recipients[];
+                  droppedBy+droppedAt; docType='attachment'. label 'Shared with you'.
+                  (detroit POST /api/v1/documents/upload/load branch, session-gated,
+                  DARK until oakley's /api/v1/documents/ mint arms.)
+
+INVARIANTS portland renders on:
+- recipients[] PRESENT iff emailed (live-send). Absent = placed-not-sent;
+  ownerSource says which flavor.
+- ownerSource ABSENT = legacy pre-contract row -> neutral 'Available', NEVER a
+  false 'Sent'.
+- IDENTITY KIND is UNIFORM: generatedBy, droppedBy, and the live-send operator id
+  are ALL bare prostan8 (droppedBy = caller session SUB; detroit unified it
+  2026-08-04). portland resolves every source prostan8->display name identically;
+  NO per-source id-kind branching.
+- ABSENCE IS MEANINGFUL: a live-send apron legitimately has no droppedBy. Writers
+  MUST NOT null-fill inapplicable fields; the list projection forwards VERBATIM
+  (detroit pinned this in an in-code comment 2026-08-04 so a future edit can't
+  helpfully null-fill).
+
+READ PATH (took an empirical self-check to pin, 2026-08-04 — my facet-grep had
+wrongly concluded 'no detroit list route'; observe > infer):
+- LIVE partner page doc objects come from detroit request-time list route
+  GET /api/v1/portal/list/:dataset/:company (Bearer, vernal-gated) — it parses
+  these aprons and, as of 2026-08-04, forwards ownerSource+generatedBy+droppedBy+
+  droppedAt.
+- OPERATOR SNAPSHOT fallback = portland make_manifest_canopy.js (readdir +
+  JSON.parse each apron) -> portal-manifest-willis.json; also carries the four.
+- STREAMING (detroit GET /api/v1/portal/doc/:ds/:co/:file, --facet-portal-doc)
+  is FORMAT-AGNOSTIC since 2026-08-05 (George-ruled; INLINE_TYPES incl. png
+  stream inline) — the old "pdf-only, 400 on non-pdf" claim here was stale
+  until 2026-08-13 (corrected from detroit's line-cited source read, FARMER
+  case). The single stream site sits INSIDE the doc-access gate callback;
+  i_portalDoc is the ONLY membrane byte-server (detroit census 08-13: no
+  web-server docroot on canopylake, TrueAPI over UNC is the sole reader).
+  Thumbnails remain pdf-only (non-pdf 400s BEFORE the gate).
+
+DEPENDENTS (change an apron shape and portland breaks SILENTLY — route any change
+through senath first): portland (render), detroit (list projection + streaming),
+lakeland (manual-drop writer), gainesville (portal-generate route).
+
+### FILE CLASSES in outgoing/<companyId>/ (2026-08-05 — a census MUST classify)
+Three classes now share the folder; do NOT count by extension:
+  {name}.pdf   OR   {name}.<img ext>   — a DOCUMENT (manual-drop can be .jpg/.png).
+  {name}.email.json                    — the APRON = the doc RECORD.
+  {name}.pdf.thumbnail.png             — DERIVED SIDECAR (detroit /api/v1/portal/thumb,
+                                         highlands create_thumbnail, regen on PDF mtime).
+                                         NO apron, EXPECTED, NOT an orphan. i_portalList's
+                                         sibling resolver excludes *.thumbnail.png.
+ROBUST RULE for any census/orphan tool (mine or a peer's): a file is a LISTED
+DOCUMENT iff it has a paired {name}.email.json apron. Classify by APRON-PRESENCE,
+never by extension — because a manual-drop IMAGE is a .png that IS a doc (has an
+apron), while a thumbnail is a .png that is NOT (no apron). Extension alone is
+ambiguous; the apron is the discriminator. senath's own tools are already safe:
+portal-status.js counts only /\.pdf$/i (thumbnails are .png, excluded; newest
+iterates only that set), portal-gap.js membership-tests exact {apron}.pdf keys and
+never orphan-hunts. Verified in code 2026-08-05, not inferred.
 
 RECIPIENT KEY = companyId. LOCKED 2026-06-07 by George. Folder is
 outgoing/{companyId}/ (e.g. outgoing/INGLES/) — documents are a COMPANY
@@ -308,10 +517,14 @@ HOW TO RESCAN (cheap, filenames only, no file reads):
   The UNC in portal-config.json is \172.31.24.120... which is NOT reachable from
   georg; the bridge path above is the same tree.
 
-EXTENSION SYMMETRY: my write is PDF-only (destPath always .pdf) and detroit byte route
-serves .pdf only. detroit listing is format-agnostic, so a NON-PDF dropped in a folder
-by something else would LIST and then fail to open. That asymmetry cannot be triggered
-by the send path.
+EXTENSION SYMMETRY [REWRITTEN 2026-08-13 — the old claim went stale 08-05]:
+my send write remains PDF-only (destPath always .pdf), but detroit's byte
+route is FORMAT-AGNOSTIC since 2026-08-05 (George-ruled) — a non-pdf document
+(manual-drop image, drag-accident png) both LISTS and SERVES inline. The old
+"lists but fails to open" asymmetry is GONE. Consequence proven by the FARMER
+case (08-13): any documented non-pdf in a company folder is fully
+partner-visible AND partner-servable through the gated route — the write is
+the disclosure decision for images exactly as for pdfs.
 
 LESSON (detroit): two layers each assuming the other gated it is how a policy ends up
 existing nowhere. A filter you do not have cannot be assumed.

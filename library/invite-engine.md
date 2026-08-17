@@ -1,6 +1,15 @@
-(unverified) Invite Engine — the DELIBERATE invitation path · BUILT 2026-07-27, senath gen-12
-(state note: dry-run verified on georg; NOT yet deployed to a prey, NOT yet wired
-to portland's button, partner body not yet written. Promotion is George's call.)
+(verified) Invite Engine — the DELIBERATE invitation path · BUILT 2026-07-27, senath gen-12
+(state as of 2026-08-17, senath gen-16: FULLY LIVE both paths since gen-12 —
+engine + detroit route + portland button + nashville ?invite= handler; cold
+chain proven from seeded records; at least one real send fired+bounced
+07-28. QA one-pass walk REMOVED by George 08-14 (ruling #52: problems
+surface in use) — NOTHING sits between George and the first real invite
+(Delk default per his 07-30 ruling). Bounced invites now AUTO-STAMP
+senath_bounced onto jrec:invite:<hash> — T1f fix live 08-14, see
+--facet-email-tracking. PENDING CHANGE: Job A slice-1 adds resolved far end
+{localCode, root, corpProstan8|null} to the invite record — NO build until
+lincolnville GO (CLOSED doc + greenville map format), see
+c:/clients/lincolnville/JOB-A-CONTRACT.md §2.)
 
 `c:/clients/senath/invite-engine/sendInvite.js` (was parked-invite-engine/)
 

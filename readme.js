@@ -40,7 +40,8 @@ var facetMap = {
   '--facet-email-tracking':    { file: 'email-tracking.md',    desc: 'Per-message SES delivery log (LIVE 2026-07-14) — CloudWatch, tags, email-lookup.js, what it honestly claims, AWS gotchas' },
   '--facet-pdf-attach':        { file: 'pdf-attach.md',        desc: 'Per-customer PDF attachment (LIVE 2026-07-16) — email-options.json switch, obj.attachPdf interface, multipart/mixed build' },
   '--facet-portal-status':     { file: 'portal-status.md',     desc: 'ARAPMAST.PORTAL flag + live tri-state route (LIVE 2026-07-24) — populate tool, sendEmail flag-write, detroit mount, HARD-WON GOTCHAS (ordhead ban, null-byte Edit trap, SMB scan latency)' },
-  '--facet-invite-engine':     { file: 'invite-engine.md',     desc: 'sendInvite.js — the DELIBERATE invitation path (BUILT 2026-07-27): ratified contract, CLI surface, the identity FORK, template contract, and the PROVENANCE that ends the "should I build it?" stall' }
+  '--facet-invite-engine':     { file: 'invite-engine.md',     desc: 'sendInvite.js — the DELIBERATE invitation path (BUILT 2026-07-27): ratified contract, CLI surface, the identity FORK, template contract, and the PROVENANCE that ends the "should I build it?" stall' },
+  '--facet-portal-utera':      { file: 'portal-utera-redesign-brief.md', desc: 'The gen-15 uTERA portal build (BUILT 2026-08-10, ruled INTERIM 08-15/16) — EXECUTION RESULTS still accurate as record-of-what-runs; SUPERSEDED as target by Job A (lincolnville JOB-A-CONTRACT.md, corp-level links) + canon link=inode-only. Read the supersession header first. As of 2026-08-17.' }
 };
 
 var facetNames = Object.keys(facetMap);

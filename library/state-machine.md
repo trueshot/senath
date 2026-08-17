@@ -1,4 +1,37 @@
 (verified gen-9 2026-06-10) State Machine — Live jrec Wiring
+(DELTA gen-16, as of 2026-08-17 — supersedes the gen-15 delta below): JOB A
+(lincolnville QB, George-approved 08-15 + canon rulings 08-16) re-ruled the
+target: access moves to CORP-level (partner corp + membership), jrec
+perportal binding rows become a DECLARED PROJECTION of the ledger at the
+gate flip (contract §3e/§6); LINK = INODE-ONLY (no couplet/arbiter, -LINK
+retired, canon Doc 04); area-as-ASSEMBLY wrong (plain directory); gen-15
+grants/gates/memberships retire at the George-scheduled backfill window.
+Until the flip: db8 DECIDES, everything below still runs live. See
+c:/clients/lincolnville/JOB-A-CONTRACT.md + senath session-notes.
+(DELTA gen-15, as of 2026-08-11 — read first): THE uTERA PORTAL WORLD IS
+BUILT. George RATIFIED the four rulings 2026-08-10 (shape = USER-of-grantor
+via PERMREQ; arbiter = pflowcorp; area = ASSEMBLY reuse; consent = once at
+membership — full record in the RATIFIED header of
+c:/clients/senath/library/portal-utera-redesign-brief.md). Built + verified
+on prod suffix 3 same day: 7 partners are USER members of williscorp
+(pilot Chris Hall t_422-424 + 6-batch t_425-440), 8 company AREAS minted
+(m_ ASSEMBLY, owner williscorp), each gated by willis_portal_lic
+(l_a1c5h024, the platform kill-switch), and 8 per-person ACCESS GRANTS
+posted (MELOND t_445 + wave-2 t_471-477). The enforcement gate =
+traversecity portal-gate.js (--facet-portal-gate). jrec:perportal is now
+the SHADOW-COMPARED interim: vernal STILL DECIDES FROM db8 at runtime,
+logging the Canopy verdict per request (dual-read, canopy-shadow.jsonl);
+the flip to canopy-decides awaits the divergence report + a QA-standing
+word (QA accounts are canopy-excluded by senath roster ruling). SEND-BIRTH
+REMOVED since 08-07 (perportal birth = registration + invite-accept ONLY;
+send-born scopes purged, 17 legit records). jrec:portal (send-ledger)
+DEMOTED to a log, no reader depends on it (display truth = folder tree +
+manifests, --facet-portal-membrane). OPEN (George, 08-11 challenge, on
+lincolnville's board): does filesystem access/ ride the inode/link system
+to be uTERA-real, or is a .grants.json convention-projection enough? =
+the third clause of his sentence. 'send' still in perportal source vocab
+pending George's retire/keep word to libertyville.
+
 
 UPDATED 2026-06-10 for the GRAIN-SPLIT ruling (tested green in production).
 Sections below marked [GEN-8, SUPERSEDED] are kept for history only.
@@ -111,6 +144,22 @@ sendEmail.js writes up to THREE jrec records at send time:
    the hash, URL params demoted to fallback for old in-flight emails).
    TTL: 7-day expiry is applied BY jrec.js itself (libertyville, schema-
    declared, EXISTS-gated at birth) — sendEmail.js no longer EXPIREs directly.
+
+*** KNOWN BUG — BIRTH PATH 2 POLLUTES ROSTERS (as of 2026-08-05, senath gen-13,
+    PENDING GEORGE'S GO-A/GO-B — see session-notes T1e + my blocked.js flag) ***
+    Path 2 binds ANY already-registered RECIPIENT as role=partner of the DOC's
+    company, with NO check for external-partner vs SENDER-SIDE STAFF. Willis docs
+    get CC'd/self-copied to Willis staff; a staff person who also holds a
+    ProduceStandards prostan8 (e.g. Susi Torigian 4tdh4tli = WILLIS STAFF per
+    vernal) thus gets bound as a 'partner' of every customer company her address
+    touched — MEASURED 22 scope_<co> bindings, all source=send. That is George's
+    'willis shown on Melon Direct'. Root: the send path treats RECEIVED-A-DOC as
+    IS-A-PARTNER; the staff-vs-partner signal lives in uTERA (vernal), which the
+    prey send path never consults. Fix direction is George's: GO-A retire this
+    path entirely (partner access only via explicit invite->register->LINK; my
+    lean — 'reachability is not permission', gen-9) or GO-B suppress sender-side
+    recipients (needs vernal's staff signal). Plus a cleanup of the wrong scopes.
+    Do NOT treat path 2 below as clean-and-final until this is ruled.
 
 3. jrec.upsert perportal:<dataset>:<prostan8>  (PER-PERSON ACCESS RECORD
    — senath is BIRTH PATH 2, fires only when identity check returns

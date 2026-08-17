@@ -1,0 +1,71 @@
+{
+  "takenAt": "2026-08-07T15:55:13.671Z",
+  "live": false,
+  "records": {
+    "jrec:perportal:WILLIS:2w70qgd3": {
+      "scope_BATTLE": "{\"companyId\":\"BATTLE\",\"pulpId\":123903,\"role\":\"partner\",\"boundAt\":\"2026-08-06T14:52:35.791Z\",\"relationshipKey\":\"jrec:portal:WILLIS:BATTLE\",\"source\":\"send\"}",
+      "senath_lastSendAt": "2026-08-06T14:52:35.791Z",
+      "tier": "registered"
+    },
+    "jrec:perportal:WILLIS:4k5pklcw": {
+      "scope_RANDAZ": "{\"companyId\":\"RANDAZ\",\"pulpId\":123991,\"role\":\"partner\",\"boundAt\":\"2026-07-28T23:39:18.947Z\",\"relationshipKey\":\"jrec:portal:WILLIS:RANDAZ\",\"source\":\"send\"}",
+      "senath_lastSendAt": "2026-07-28T23:53:26.187Z",
+      "tier": "registered"
+    },
+    "jrec:perportal:WILLIS:4tdh4tli": {
+      "scope_PJCFAR": "{\"companyId\":\"PJCFAR\",\"pulpId\":123962,\"role\":\"partner\",\"boundAt\":\"2026-07-02T20:45:15.789Z\",\"relationshipKey\":\"jrec:portal:WILLIS:PJCFAR\",\"source\":\"send\"}",
+      "scope_WILLPR": "{\"companyId\":\"WILLPR\",\"pulpId\":123985,\"role\":\"partner\",\"boundAt\":\"2026-07-06T19:34:21.609Z\",\"relationshipKey\":\"jrec:portal:WILLIS:WILLPR\",\"source\":\"send\"}",
+      "scope_FRESHP": "{\"companyId\":\"FRESHP\",\"pulpId\":123979,\"role\":\"partner\",\"boundAt\":\"2026-07-03T15:33:27.718Z\",\"relationshipKey\":\"jrec:portal:WILLIS:FRESHP\",\"source\":\"send\"}",
+      "scope_LANGEF": "{\"companyId\":\"LANGEF\",\"pulpId\":123907,\"role\":\"partner\",\"boundAt\":\"2026-07-03T20:04:58.444Z\",\"relationshipKey\":\"jrec:portal:WILLIS:LANGEF\",\"source\":\"send\"}",
+      "scope_GARDEN": "{\"companyId\":\"GARDEN\",\"pulpId\":123946,\"role\":\"partner\",\"boundAt\":\"2026-06-20T14:19:34.281Z\",\"relationshipKey\":\"jrec:portal:WILLIS:GARDEN\",\"source\":\"send\"}",
+      "scope_MELOND": "{\"companyId\":\"MELOND\",\"pulpId\":123966,\"role\":\"partner\",\"boundAt\":\"2026-06-30T21:29:47.153Z\",\"relationshipKey\":\"jrec:portal:WILLIS:MELOND\",\"source\":\"send\"}",
+      "scope_BATTLE": "{\"companyId\":\"BATTLE\",\"pulpId\":124018,\"role\":\"partner\",\"boundAt\":\"2026-08-06T14:53:37.121Z\",\"relationshipKey\":\"jrec:portal:WILLIS:BATTLE\",\"source\":\"send\"}",
+      "scope_SWEETM": "{\"companyId\":\"SWEETM\",\"pulpId\":123989,\"role\":\"partner\",\"boundAt\":\"2026-07-07T16:44:23.741Z\",\"relationshipKey\":\"jrec:portal:WILLIS:SWEETM\",\"source\":\"send\"}",
+      "scope_GULFSH": "{\"companyId\":\"GULFSH\",\"pulpId\":123919,\"role\":\"partner\",\"boundAt\":\"2026-06-10T21:49:13.943Z\",\"relationshipKey\":\"jrec:portal:WILLIS:GULFSH\",\"source\":\"send\"}",
+      "scope_FORDEL": "{\"companyId\":\"FORDEL\",\"pulpId\":123971,\"role\":\"partner\",\"boundAt\":\"2026-07-01T20:29:35.066Z\",\"relationshipKey\":\"jrec:portal:WILLIS:FORDEL\",\"source\":\"send\"}",
+      "scope_CANAMF": "{\"companyId\":\"CANAMF\",\"pulpId\":123996,\"role\":\"partner\",\"boundAt\":\"2026-07-17T22:50:04.582Z\",\"relationshipKey\":\"jrec:portal:WILLIS:CANAMF\",\"source\":\"send\"}",
+      "senath_lastSendAt": "2026-08-07T01:15:22.912Z",
+      "scope_MARKBR": "{\"companyId\":\"MARKBR\",\"pulpId\":123928,\"role\":\"partner\",\"boundAt\":\"2026-06-15T16:36:00.585Z\",\"relationshipKey\":\"jrec:portal:WILLIS:MARKBR\",\"source\":\"send\"}",
+      "scope_GUYVAR": "{\"companyId\":\"GUYVAR\",\"pulpId\":123998,\"role\":\"partner\",\"boundAt\":\"2026-07-21T14:18:54.562Z\",\"relationshipKey\":\"jrec:portal:WILLIS:GUYVAR\",\"source\":\"send\"}",
+      "scope_WFLLC": "{\"companyId\":\"WFLLC\",\"pulpId\":123959,\"role\":\"partner\",\"boundAt\":\"2026-07-06T20:18:50.749Z\",\"relationshipKey\":\"jrec:portal:WILLIS:WFLLC\",\"source\":\"send\",\"domains\":{\"documents\":{\"granted\":true,\"grantedAt\":\"2026-07-06T20:18:50.749Z\",\"grantedBy\":\"birth:send\"},\"orders\":{\"granted\":true,\"grantedAt\":\"2026-08-04T18:59:28.793Z\",\"grantedBy\":\"bjynfi2b\"}}}",
+      "scope_SGA": "{\"companyId\":\"SGA\",\"pulpId\":123935,\"role\":\"partner\",\"boundAt\":\"2026-06-17T19:01:08.308Z\",\"relationshipKey\":\"jrec:portal:WILLIS:SGA\",\"source\":\"send\"}",
+      "scope_AUBURN": "{\"companyId\":\"AUBURN\",\"pulpId\":123910,\"role\":\"partner\",\"boundAt\":\"2026-07-03T16:13:48.842Z\",\"relationshipKey\":\"jrec:portal:WILLIS:AUBURN\",\"source\":\"send\"}",
+      "scope_SEMINO": "{\"companyId\":\"SEMINO\",\"pulpId\":123939,\"role\":\"partner\",\"boundAt\":\"2026-06-18T15:22:50.086Z\",\"relationshipKey\":\"jrec:portal:WILLIS:SEMINO\",\"source\":\"send\"}",
+      "scope_STELLA": "{\"companyId\":\"STELLA\",\"pulpId\":123951,\"role\":\"partner\",\"boundAt\":\"2026-06-29T22:16:40.264Z\",\"relationshipKey\":\"jrec:portal:WILLIS:STELLA\",\"source\":\"send\"}",
+      "scope_CANAMP": "{\"companyId\":\"CANAMP\",\"pulpId\":123981,\"role\":\"partner\",\"boundAt\":\"2026-07-03T17:32:32.780Z\",\"relationshipKey\":\"jrec:portal:WILLIS:CANAMP\",\"source\":\"send\"}",
+      "scope_RUBYCO": "{\"companyId\":\"RUBYCO\",\"pulpId\":123905,\"role\":\"partner\",\"boundAt\":\"2026-06-16T14:01:01.025Z\",\"relationshipKey\":\"jrec:portal:WILLIS:RUBYCO\",\"source\":\"send\"}",
+      "tier": "registered",
+      "scope_NATPRO": "{\"companyId\":\"NATPRO\",\"pulpId\":123943,\"role\":\"partner\",\"boundAt\":\"2026-06-19T13:57:21.625Z\",\"relationshipKey\":\"jrec:portal:WILLIS:NATPRO\",\"source\":\"send\"}",
+      "scope_SMPMAR": "{\"companyId\":\"SMPMAR\",\"pulpId\":123888,\"role\":\"partner\",\"boundAt\":\"2026-06-14T13:15:28.495Z\",\"relationshipKey\":\"jrec:portal:WILLIS:SMPMAR\",\"source\":\"send\"}",
+      "scope_BOVA": "{\"companyId\":\"BOVA\",\"pulpId\":123973,\"role\":\"partner\",\"boundAt\":\"2026-07-02T14:59:58.828Z\",\"relationshipKey\":\"jrec:portal:WILLIS:BOVA\",\"source\":\"send\"}"
+    },
+    "jrec:perportal:WILLIS:5nzel70v": {
+      "scope_FRESHP": "{\"companyId\":\"FRESHP\",\"pulpId\":121744,\"role\":\"partner\",\"boundAt\":\"2026-07-30T17:24:17.315Z\",\"relationshipKey\":\"jrec:portal:WILLIS:FRESHP\",\"source\":\"send\",\"domains\":{\"documents\":{\"granted\":true,\"grantedAt\":\"2026-07-30T17:24:17.315Z\",\"grantedBy\":\"birth:send\"},\"orders\":{\"granted\":true,\"grantedAt\":\"2026-08-06T02:13:51.986Z\",\"grantedBy\":\"bjynfi2b\"}}}",
+      "senath_lastSendAt": "2026-07-30T17:24:17.315Z",
+      "tier": "registered"
+    },
+    "jrec:perportal:WILLIS:bjynfi2b": {
+      "scope_WFLLC": "{\"companyId\":\"WFLLC\",\"pulpId\":123859,\"role\":\"partner\",\"boundAt\":\"2026-08-04T19:07:34.959Z\",\"relationshipKey\":\"jrec:portal:WILLIS:WFLLC\",\"source\":\"send\",\"domains\":{\"documents\":{\"granted\":true,\"grantedAt\":\"2026-08-04T19:07:34.959Z\",\"grantedBy\":\"birth:send\"},\"orders\":{\"granted\":true,\"grantedAt\":\"2026-08-04T19:08:37.053Z\",\"grantedBy\":\"bjynfi2b\"}}}",
+      "scope_HARTEE": "{\"companyId\":\"HARTEE\",\"pulpId\":121991,\"role\":\"partner\",\"boundAt\":\"2026-06-14T18:54:58.072Z\",\"relationshipKey\":\"jrec:portal:WILLIS:HARTEE\",\"source\":\"send\"}",
+      "scope_INGLES": "{\"companyId\":\"INGLES\",\"pulpId\":121484,\"role\":\"partner\",\"boundAt\":\"2026-06-14T18:52:00.334Z\",\"relationshipKey\":\"jrec:portal:WILLIS:INGLES\",\"source\":\"send\"}",
+      "scope_FARMER": "{\"companyId\":\"FARMER\",\"pulpId\":123768,\"role\":\"partner\",\"boundAt\":\"2026-08-01T17:39:24.138Z\",\"relationshipKey\":\"jrec:portal:WILLIS:FARMER\",\"source\":\"send\",\"domains\":{\"documents\":{\"granted\":true,\"grantedAt\":\"2026-08-01T17:39:24.138Z\",\"grantedBy\":\"birth:send\"},\"orders\":{\"granted\":true,\"grantedAt\":\"2026-08-05T20:08:38.911Z\",\"grantedBy\":\"bjynfi2b\"}}}",
+      "scope_COASTT": "{\"companyId\":\"COASTT\",\"pulpId\":121692,\"role\":\"partner\",\"boundAt\":\"2026-06-18T16:14:11.895Z\",\"relationshipKey\":\"jrec:portal:WILLIS:COASTT\",\"source\":\"send\"}",
+      "tier": "registered",
+      "scope_HARVES": "{\"companyId\":\"HARVES\",\"pulpId\":123844,\"role\":\"partner\",\"boundAt\":\"2026-06-11T15:13:20.228Z\",\"relationshipKey\":\"jrec:portal:WILLIS:HARVES\",\"source\":\"send\"}",
+      "scope_PROMIS": "{\"companyId\":\"PROMIS\",\"pulpId\":null,\"role\":\"partner\",\"boundAt\":\"2026-07-28T19:11:42.956Z\",\"relationshipKey\":\"jrec:portal:WILLIS:PROMIS\",\"source\":\"invite\",\"domains\":{\"documents\":{\"granted\":true,\"grantedAt\":\"2026-07-28T19:11:42.956Z\",\"grantedBy\":\"birth:invite\"},\"orders\":{\"granted\":true,\"grantedAt\":\"2026-07-30T11:27:35.509Z\",\"grantedBy\":\"bk6l2u8y\"}}}",
+      "scope_SMPMAR": "{\"companyId\":\"SMPMAR\",\"pulpId\":123921,\"role\":\"partner\",\"boundAt\":\"2026-06-14T18:26:00.840Z\",\"relationshipKey\":\"jrec:portal:WILLIS:SMPMAR\",\"source\":\"send\"}",
+      "senath_lastSendAt": "2026-08-05T16:16:33.582Z",
+      "scope_FOBSAL": "{\"companyId\":\"FOBSAL\",\"pulpId\":123818,\"role\":\"partner\",\"boundAt\":\"2026-07-02T14:59:59.965Z\",\"relationshipKey\":\"jrec:portal:WILLIS:FOBSAL\",\"source\":\"send\"}",
+      "scope_WFREPK": "{\"companyId\":\"WFREPK\",\"pulpId\":123897,\"role\":\"partner\",\"boundAt\":\"2026-07-18T17:46:58.158Z\",\"relationshipKey\":\"jrec:portal:WILLIS:WFREPK\",\"source\":\"send\",\"domains\":{\"documents\":{\"granted\":true,\"grantedAt\":\"2026-07-18T17:46:58.158Z\",\"grantedBy\":\"birth:send\"},\"orders\":{\"granted\":true,\"grantedAt\":\"2026-08-06T02:19:33.571Z\",\"grantedBy\":\"bjynfi2b\"}}}",
+      "scope_SUNFAR": "{\"companyId\":\"SUNFAR\",\"pulpId\":124015,\"role\":\"partner\",\"boundAt\":\"2026-08-05T16:16:33.582Z\",\"relationshipKey\":\"jrec:portal:WILLIS:SUNFAR\",\"source\":\"send\"}"
+    },
+    "jrec:perportal:WILLIS:bk6l2u8y": {
+      "scope_DAVIS": "{\"companyId\":\"DAVIS\",\"pulpId\":123940,\"role\":\"partner\",\"boundAt\":\"2026-06-18T15:46:23.819Z\",\"relationshipKey\":\"jrec:portal:WILLIS:DAVIS\",\"source\":\"send\"}",
+      "scope_LIPMAN": "{\"companyId\":\"LIPMAN\",\"pulpId\":null,\"role\":\"partner\",\"boundAt\":\"2026-06-18T17:14:55.766Z\",\"relationshipKey\":\"jrec:portal:WILLIS:LIPMAN\",\"source\":\"send\"}",
+      "scope_INGLES": "{\"companyId\":\"INGLES\",\"pulpId\":123820,\"role\":\"partner\",\"boundAt\":\"2026-06-10T12:14:00.975Z\",\"relationshipKey\":\"portal:WILLIS:INGLES\",\"source\":\"send\"}",
+      "scope_LANGEF": "{\"companyId\":\"LANGEF\",\"pulpId\":123956,\"role\":\"partner\",\"boundAt\":\"2026-06-27T18:04:34.171Z\",\"relationshipKey\":\"jrec:portal:WILLIS:LANGEF\",\"source\":\"send\"}",
+      "senath_lastSendAt": "2026-06-27T18:04:34.171Z",
+      "tier": "registered"
+    }
+  }
+}

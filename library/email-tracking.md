@@ -154,7 +154,42 @@ prey-runtime code lives in willdev/nodejs (portal-status.js precedent).
 
 SES TAGS as of 7/22: seven per doc send (dataset company load doctype date who
 doc) — doctype is the 'came from my path' marker the extractor keys on.
-Invite sends (parked engine) would add doctype=invite + invite=<hash>.
+Invite sends (engine LIVE as of 2026-07-27, no longer parked) add doctype=invite
++ invite=<hash>. *** GAP as of 2026-08-05 (senath gen-13): the extractor does NOT
+stamp senath_bounced/senath_bounceType onto jrec:invite:<hash> when a Bounce
+carries an invite= tag. VERIFIED the tag IS present on the bounce (07-28
+will@willisproducesales invite bounced, X-SES-MESSAGE-TAGS carried
+invite=4f1eac1a...), so the SEND/tagging is fine — the miss is extractor-side.
+★ FIX DEPLOYED 2026-08-14 (senath gen-16, commit 66b8cd3, pushed to Monkey):
+extract-email-log.js now captures the invite tag at group time and, AFTER the
+JSON writes (best-effort, never fatal to extraction), stamps senath_bounced /
+senath_bounceType / senath_bounceDiagnostic / senath_bouncedAt onto
+jrec:invite:<hash> in db8 — EXISTS-guarded (never resurrects a TTL-expired
+record), idempotent, zero-dep RESP client over net (Monkey node_modules
+unverifiable => no require risk). Live-tested from georg via the 127.0.0.1:16379
+tunnel: extraction, no-bounce path, non-fatal-skip path, connect/SELECT/EXISTS/
+guard path (--stamp-test flag, synthetic hash). HSET leg itself awaits the
+first real in-window bounce. GOTCHA PAID: the georg tunnel's COLD remote leg
+takes ~9.9s to first reply — a 10s idle timeout died at the edge; now 30s.
+GEORG-SIDE TEST RECIPE (exact, cost time to derive 08-14 — no aws-sdk
+resolves from senath/monkey/ on georg, and the extractor's error hint names
+a Monkey path):
+  SENATH_AWS_SDK=c:/clients/albion/node_modules/aws-sdk \
+  SENATH_AWS_SECRETS=c:/secrets/config.json \
+  SENATH_REDIS_HOST=127.0.0.1 SENATH_REDIS_PORT=16379 \
+  node c:/clients/senath/monkey/extract-email-log.js --days 3 --out <scratch> \
+  [--stamp-test <32hex>]   # synthetic bounced invite; nonexistent hash =
+                           # proves connect/SELECT/EXISTS/guard, writes nothing
+127.0.0.1:16379 is the georg tunnel to db8 (same one libertyville
+inspect.js uses); COLD first reply ~9.9s — hence the 30s idle timeout.
+detroit's GET /api/v1/portal/invites forwards the senath_* fields verbatim;
+portland renders. VERIFIED LIVE 2026-08-14 12:31Z (prosser, SMB read):
+first post-deploy tick rewrote _index.json (generatedAt 12:31:30Z > deploy
+12:17Z). HOW TO VERIFY THIS TASK WITHOUT A SHELL (prosser's reasoning, keep):
+the task only rewrites _index.json on a SUCCESSFUL run, so a fresh
+generatedAt IS proof of Last Result 0 — no schtasks query needed. HSET-leg
+evidence on the next real bounce = read the jrec:invite record itself
+(inspect.js from georg); the record beats any log line. ***
 
 BOUNCE ALERTING as of 7/24: SNS topic ses-bounce-alerts
 (arn:aws:sns:us-east-1:631217702207:ses-bounce-alerts) receives Bounce+Complaint

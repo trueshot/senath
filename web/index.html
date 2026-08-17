@@ -91,7 +91,8 @@ button:hover { background: #2a4a6f; }
 </div>
 
 <div class="tabs">
-  <div class="tab active" data-tab="decisions">&#9733; Decisions For You</div>
+  <div class="tab active" data-tab="redesign">&#9733; 08-07 Structure-as-Truth</div>
+  <div class="tab"        data-tab="decisions">Decisions (June &mdash; historical)</div>
   <div class="tab"        data-tab="channels">Three Channels</div>
   <div class="tab"        data-tab="model">The Membrane Model</div>
   <div class="tab"        data-tab="pipeline">Provisioning Pipeline</div>
@@ -101,9 +102,104 @@ button:hover { background: #2a4a6f; }
 <div class="content">
 
 <!-- =================================================================== -->
+<!-- TAB: 08-07 STRUCTURE-AS-TRUTH REDESIGN (senath gen-14)               -->
+<!-- =================================================================== -->
+<div id="redesign" class="panel active">
+
+  <div class="section" style="border:1px solid #16803c;border-radius:8px">
+    <h2 style="color:#4ade80">BUILT &amp; LIVE as of 2026-08-07 (George's GO + "migrate")</h2>
+    <p style="font-size:13px;color:#cbd5e1;line-height:1.8">
+      George's principle: <i>"the data that is written and that can safely be shared
+      because it can be gated by the structure."</i> Executed 2026-08-07: send-birth removed
+      from sendEmail.js (membership only via registration/invite); db8 cleaned per the approved
+      seed list below (now HISTORICAL &mdash; the cleanup ran, backup in senath tools/backups/);
+      1,323 documents migrated into documents/, 114 sidecars to appdata/, manifests +
+      _portals.json rollup live (2.65s listing); three writers conformed. STILL OPEN (on
+      George's board): the four uTERA rulings &mdash; USER-of-willis membership, arbiter, area
+      entity type, consent grain. The uTERA formalization (ledger couplets, canopy edges)
+      remains frozen until he rules; today's files become derived state of that ledger then.
+    </p>
+  </div>
+
+  <div class="section">
+    <h2>The Design: the structure IS the truth</h2>
+    <table>
+      <thead><tr><th style="width:30%">Question</th><th style="width:35%">TODAY (jrec shadows)</th><th style="width:35%">PROPOSED (structure as truth)</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>Which portals exist?</b></td>
+          <td style="color:#f87171">jrec:portal:&lt;ds&gt;:&lt;co&gt; in Redis db8 &mdash; a shadow of sends; Portal Manager reads it</td>
+          <td style="color:#4ade80">The folder tree itself: <code>outgoing/&lt;CO&gt;/</code> exists &rArr; portal exists. (lincolnville's trading-partners page already proves this read)</td>
+        </tr>
+        <tr>
+          <td><b>How many documents? (no crawl)</b></td>
+          <td style="color:#f87171">SMB readdir of every folder &mdash; the 15-second load George sees</td>
+          <td style="color:#4ade80"><code>_manifest.json</code> per company + one <code>_portals.json</code> dataset rollup &mdash; written by the writers in the same breath as each document. Fresh by construction; reading one file is instant at any folder size</td>
+        </tr>
+        <tr>
+          <td><b>Who may enter? (membership)</b></td>
+          <td style="color:#f87171">jrec:perportal &mdash; polluted by send-birth (receiving a CC made Susi "partner" of 23 companies)</td>
+          <td style="color:#4ade80"><code>_users.json</code> inside each company's area &mdash; written ONLY by invite-acceptance / registration. The send path cannot touch it. The record of who-may-enter lives inside the thing it gates</td>
+        </tr>
+        <tr>
+          <td><b>Where does app data live?</b></td>
+          <td style="color:#f87171">Nowhere safe &mdash; anything in outgoing/ risks being partner-visible by location (the thumbnail-sidecar bug, 08-05)</td>
+          <td style="color:#4ade80"><code>portals/appdata/&lt;CO&gt;/</code> &mdash; sibling tree, never listed by portal routes. Shareable-by-structure, leak-proof by location</td>
+        </tr>
+        <tr>
+          <td><b>Growth to thousands of files?</b></td>
+          <td style="color:#f87171">Flat folder, unbounded</td>
+          <td style="color:#4ade80">Month partitions <code>outgoing/&lt;CO&gt;/2026-08/</code> derived from the date already leading every filename &mdash; scheme agreed now, executed when manifest counts say a folder needs it</td>
+        </tr>
+      </tbody>
+    </table>
+    <pre style="background:#0b1017;border:1px solid #1e2a3a;border-radius:6px;padding:14px;font-size:12px;line-height:1.7;color:#94a3b8">
+portals/
+  outgoing/MELOND/                  &larr; partner-visible membrane (the portal)
+    <span style="color:#4ade80">_manifest.json</span>                  &larr; counts + index, written by every writer, REBUILDABLE from filenames
+    <span style="color:#4ade80">_users.json</span>                     &larr; who may enter &mdash; written ONLY by invite/registration
+    20260805_susit_xlq_32848_invoice_2.pdf
+    20260805_susit_xlq_32848_invoice_2.email.json
+  outgoing/<span style="color:#4ade80">_portals.json</span>           &larr; dataset rollup: the Portal Manager header in one read
+  <span style="color:#4ade80">appdata/MELOND/</span>                   &larr; application data &mdash; portal routes never look here</pre>
+    <p style="font-size:12px;color:#64748b">Iron rule: <b>the folder is the truth; every manifest is an index</b> &mdash; a sweep can rebuild any of them from the filenames + aprons. jrec:portal demotes to an unused log; jrec:perportal is replaced by _users.json (and formalizes into canopy edges if/when George rules the frozen uTERA design in).</p>
+  </div>
+
+  <div class="section">
+    <h2>New vs already contemplated (provenance, honestly labeled)</h2>
+    <table>
+      <thead><tr><th style="width:22%">Artifact</th><th style="width:18%">Status</th><th>Lineage</th></tr></thead>
+      <tbody>
+        <tr><td><code>_users.json</code></td><td style="color:#fbbf24"><b>NEW</b> (senath, this conversation)</td><td>File-world stand-in for the frozen design's canopy USER edge + LINK grants. Same goal (membership only via deliberate acts), same location-principle as George's "access embodied in the area" &mdash; but the artifact itself was not in any prior design.</td></tr>
+        <tr><td><code>_manifest.json</code></td><td style="color:#60a5fa">CONTEMPLATED</td><td>= option B on inola's board flag; portland's make_manifest_canopy.js is the operator-side precedent; inola's .link.json-at-area-root proposal is the same metadata-file-in-structure pattern.</td></tr>
+        <tr><td><code>appdata/</code> sibling</td><td style="color:#fbbf24"><b>NEW</b> (senath, this conversation)</td><td>Applies inola's inode-vs-appdir ruling (app dirs are plain dirs) + the lesson of the 08-05 thumbnail leak: separation by location, not by filename convention.</td></tr>
+        <tr><td>Month partitions</td><td style="color:#60a5fa">CONTEMPLATED</td><td>Standard practice; enabled by the existing {date}_{who}_{kind} filename convention (the date already leads every name).</td></tr>
+        <tr><td>Folder = portal list truth</td><td style="color:#60a5fa">CONTEMPLATED (George, today)</td><td>lincolnville's trading-partners viewer is George's declared first step; this design completes it by demoting jrec:portal.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>The Seed List &mdash; live jrec:perportal records, classified <button onclick="refreshSeed()" style="float:right;background:#1e2a3a;color:#60a5fa;border:1px solid #2d3f56;border-radius:5px;padding:4px 12px;cursor:pointer;font-size:12px">&#8635; Refresh from db8</button></h2>
+    <p style="font-size:13px;color:#cbd5e1;line-height:1.7">
+      Every perportal record in Redis right now. <span style="color:#4ade80"><b>Green scopes</b></span> (registration) and
+      <span style="color:#60a5fa"><b>blue scopes</b></span> (invite) are deliberate acts &mdash; they seed <code>_users.json</code>.
+      <span style="color:#f87171"><b>Red scopes</b></span> (send-birth) are the pollution &mdash; they do NOT migrate; this executes the cleanup as a side effect.
+      QA rows are synthetic (kept for test continuity, flagged). <b>HISTORICAL &mdash; George approved this list and the cleanup RAN 2026-08-07</b>
+      (red rows deleted from db8; Refresh shows the post-cleanup state; backup: senath tools/backups/perportal-backup-2026-08-07T15-55-21-906Z-LIVE.json).
+    </p>
+    <div id="seedSummary" class="empty">Loading&hellip;</div>
+    <div id="seedList"></div>
+  </div>
+</div>
+
+<!-- =================================================================== -->
 <!-- TAB 0: DECISIONS FOR YOU                                             -->
 <!-- =================================================================== -->
-<div id="decisions" class="panel active">
+<div id="decisions" class="panel">
+  <div class="section" style="border:1px solid #7c3aed;border-radius:8px;margin-bottom:14px">
+    <p style="font-size:12px;color:#a78bfa;margin:0">HISTORICAL (June 2026 state) &mdash; several constructs below (per-person jrec, tier-on-jrec) are superseded by the 08-07 Structure-as-Truth tab and the frozen uTERA redesign brief. Kept for lineage.</p>
+  </div>
   <div class="section">
     <h2>Decisions That Get This Operational</h2>
     <p id="decisionsIntro" class="empty">Loading...</p>
@@ -591,6 +687,60 @@ async function loadChannels() {
   });
 }
 
+// ---------- TAB: 08-07 structure-as-truth seed list (senath gen-14) ----------
+var SEED_NAMES = {
+  '4tdh4tli': 'Susi Torigian (Willis STAFF — susit)',
+  'bjynfi2b': 'Will (Steven) Willis (Willis STAFF — wwillis)',
+  'bk6l2u8y': '(unconfirmed — likely operator identity)'
+};
+function seedName(r) {
+  var email = r.fields.nashville_email || '';
+  if (SEED_NAMES[r.prostan8]) return SEED_NAMES[r.prostan8];
+  return email || '(no email on record — send-birth never captured identity)';
+}
+function isQA(r) {
+  var email = r.fields.nashville_email || '';
+  return r.dataset === 'VERNALQA' || email.indexOf('qa.produceflow.com') !== -1;
+}
+async function loadSeed() {
+  var s = await (await fetch('api/perportal')).json();
+  var mig = 0, drop = 0, qa = 0;
+  var html = '<table><thead><tr><th style="width:90px">prostan8</th><th style="width:26%">who</th>'
+           + '<th>scopes (company : how it was born)</th><th style="width:110px">verdict</th></tr></thead><tbody>';
+  s.records.forEach(function(r) {
+    var clean = r.scopes.filter(function(x){ return x.source === 'registration' || x.source === 'invite'; });
+    var polluted = r.scopes.filter(function(x){ return x.source === 'send'; });
+    var qaRow = isQA(r);
+    if (qaRow) qa++; else { mig += clean.length; drop += polluted.length; }
+    var chips = r.scopes.map(function(x) {
+      var col = x.source === 'registration' ? '#4ade80' : x.source === 'invite' ? '#60a5fa'
+              : x.source === 'send' ? '#f87171' : '#94a3b8';
+      return '<span style="display:inline-block;border:1px solid ' + col + ';color:' + col
+           + ';border-radius:10px;padding:1px 8px;margin:1px 3px 1px 0;font-size:11px">'
+           + esc(x.companyId) + ' : ' + esc(x.source || '?') + '</span>';
+    }).join('');
+    var verdict = qaRow ? '<span style="color:#94a3b8">QA (synthetic)</span>'
+      : clean.length && polluted.length ? '<span style="color:#fbbf24">SPLIT: keep ' + clean.length + ', drop ' + polluted.length + '</span>'
+      : clean.length ? '<span style="color:#4ade80">MIGRATE (' + clean.length + ')</span>'
+      : '<span style="color:#f87171">DROP ALL (' + polluted.length + ')</span>';
+    html += '<tr' + (qaRow ? ' style="opacity:.55"' : '') + '><td><code>' + esc(r.prostan8) + '</code><br><span style="font-size:10px;color:#64748b">' + esc(r.dataset) + '</span></td>'
+         + '<td style="font-size:12px">' + esc(seedName(r)) + '</td><td>' + chips + '</td><td>' + verdict + '</td></tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('seedList').innerHTML = html;
+  var sm = document.getElementById('seedSummary');
+  sm.classList.remove('empty');
+  sm.innerHTML = '<p style="font-size:13px;color:#cbd5e1"><b style="color:#4ade80">' + mig + ' scope grants migrate</b> (deliberate acts) &middot; '
+    + '<b style="color:#f87171">' + drop + ' scope grants drop</b> (send-birth pollution) &middot; '
+    + '<b style="color:#94a3b8">' + qa + ' QA rows</b> flagged &middot; snapshot ' + esc(s.generatedAt) + '</p>';
+}
+async function refreshSeed() {
+  document.getElementById('seedSummary').textContent = 'Re-reading db8…';
+  try { await fetch('api/perportal-refresh', { method: 'POST' }); } catch (e) {}
+  loadSeed();
+}
+
+loadSeed();
 loadDecisions();
 loadChannels();
 loadModel();
