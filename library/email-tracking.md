@@ -208,3 +208,32 @@ gated timer in their console). Measured result that reframed SeedDrop: 145/145
 delivered, 0 bounces, 30/34 people opened, ZERO registrations — the cliff is
 the CLICK/story, not delivery. regjourney TTL is 7 DAYS — pending cohorts
 erode by design; never read shrinkage as conversion.
+=== BOUNCE CLASS vs REPUTATION — incident-read know-how (added gen-17, 2026-09-06) ===
+
+When asked "did N bounces hurt our SES reputation / do we need suppression
+action" (denver, ticonderoga's .example leak, 09-05): the answer turns on
+bounceType, NOT the raw count. Read it, don't assume.
+
+  - TRANSIENT (soft) bounces do NOT feed SES's enforcement bounce rate and do
+    NOT trigger account auto-suppression. PERMANENT (hard) bounces do both.
+  - A send to a non-resolving / reserved domain (.example, RFC-2606) comes back
+    TRANSIENT/General "smtp; 550 5.4.4 Invalid domain" — counterintuitive (you'd
+    expect permanent), but that's how SES classified all 20 in the 09-05 leak.
+  - CROSS-CHECK that transient bounces are excluded from the hard-bounce
+    accounting: getSendStatistics account Bounces stayed 0 over 7d while 20
+    transient bounces sat in the event log. getSendStatistics.Bounces = hard only.
+
+WHERE TO LOOK (all runnable from georg; creds = c:/secrets/config.json, sdk =
+c:/clients/albion/node_modules/aws-sdk; AWS/SES namespace has a slash so use the
+SDK or PowerShell, never Git Bash — see the mangling gotcha above):
+  - per-message truth: filterLogEvents on /aws/events/ses-produceflow, window
+    around the incident; det.bounce.bounceType / .bounceSubType /
+    bouncedRecipients[].diagnosticCode. THE LOG IS AUTHORITATIVE — it caught the
+    20 when getSendStatistics showed 0.
+  - enforcement rate: CloudWatch get-metric-statistics AWS/SES
+    Reputation.BounceRate (0-1). SES: 5% review / 10% enforcement. Baseline here
+    ~0.2-0.7%.
+  - suppression: SESV2 getAccount -> SuppressionAttributes.SuppressedReasons;
+    per-address SESV2 getSuppressedDestination (NotFoundException = not on list).
+  Reputation is ACCOUNT-level (acct 631217702207) — one rate across all 4
+  verified domains; a leak from one domain is everyone's rate.

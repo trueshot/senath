@@ -37,10 +37,19 @@ var REDIS_HOST = 'my-redis-cluster.3jytjd.0001.use1.cache.amazonaws.com';
 var REDIS_PORT = 6379;
 var REDIS_DB = 8;
 
-// The CTA forks with the identity (nashville gen-4, 2026-07-27):
-//   no identity  -> the registration form
-//   has identity -> straight to sign-in; oauth returns them to /home.html
-//                   authenticated. No phone, no SMS, no form.
+// The CTA forks with the identity:
+//   no identity  -> the registration form (register.html?invite=, binds on completion)
+//   has identity -> accept.html?invite=<hash> — the ACCEPT screen. If not logged
+//                   in it self-bounces via signin.html?return= and back; on Accept
+//                   it POSTs /api/invite/:hash/accept -> i_accept.js plants the
+//                   incoming person-link + advances step=accepted.
+// ★ FIXED 2026-08-31 (senath gen-17, nashville's measured gap): the isPartner
+// branch was 'signin.html' with NO hash — an existing member landed on /home.html
+// and NEVER reached Accept, so the link never planted and the invite stuck at
+// 'sent' (measured on George invited to FRESHP). accept.html went live 08-15,
+// AFTER the old 2026-07-27 straight-to-signin comment. This is the 08-19 ratified
+// model: a third-party invite plants via i_accept at Accept (self-invite still
+// plants at send, upstream). New-user branch unchanged.
 // ★ register.html does NOT parse '?invite=' today — verified by nashville
 // 2026-07-27. A new-user link lands on the generic form and a completion binds
 // nothing. NEW_USER_PATH_READY stays false until their handler ships; with it
@@ -48,12 +57,71 @@ var REDIS_DB = 8;
 var NEW_USER_PATH_READY = true;   // FLIPPED 2026-07-28: nashville CONFIRMED DIRECT (not relayed) — ?invite= handler live+QA-walked: open stamp, fail-closed registration, binding birth, invite close, negatives verified.
 function ctaFor(isPartner, inviteHash) {
     return isPartner
-        ? 'https://producestandards.org/signin.html'
+        ? 'https://producestandards.org/accept.html?invite=' + inviteHash
         : 'https://producestandards.org/register?invite=' + inviteHash;
 }
 
 function esc(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// ---------------------------------------------------------------- self-plant
+// SELF-INVITE PLANTS AT SEND — George's ruling 2026-08-19 (relayed by portland
+// gen-12; args verified against c:/cot source by senath gen-17): when the
+// inviter IS the invitee (inviterPersonP8 === invitee's resolved p8), the send
+// IS the consent — plant the person-only symlink immediately; nobody clicks
+// Accept on their own invite. Third-party invites are UNCHANGED (Accept stays
+// the planter via nashville's i_accept).
+//
+// TRANSPORT: this engine runs mounted in TrueAPI on the PREY — it cannot
+// require nodejs/inola/link-op (modern JS + DynamoDB TransactWriteItems; the
+// prey's Node and aws-sdk have neither). The plant rides verifyapi's
+// POST /api/plant-link (Monkey:3006, x-shared-secret gated), which calls the
+// SAME vernal-bound createPersonLink as i_accept — lincolnville's ruling: same
+// flow, never a parallel implementation. This is the PURPOSE-NAMED door vernal
+// built at my boundary request (live+verified 2026-08-19, vernal gen-12): it
+// REQUIRES explicit persons (400 persons-required, never scans — no scan-all
+// footgun on this per-send hot path), unlike the /api/admin/repoint-persons
+// backfill surface this first shipped on. ownerP8 (willis '82vlsz7s') + suffix
+// are bound server-side; hat defaults 'incoming' inside link-op. Response shape
+// identical to repoint (+ additive per-result hat, harmless). Idempotent:
+// alreadyExisted on a live link.
+//
+// FAIL LOUD + CLOSED: a plant failure ABORTS the send (binding_failed class) —
+// the email would promise a portal the person cannot see. This is a WRITE, so
+// no fail-open here (contrast the identity check below, which is a read).
+function plantSelfLink(personP8, targetDir, cb) {
+    var postData = JSON.stringify({ commit: true, persons: [{ personP8: personP8, targetDir: targetDir }] });
+    var req = http.request({
+        hostname: IDENTITY_HOST, port: IDENTITY_PORT,
+        path: '/api/plant-link', method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': Buffer.byteLength(postData),
+            'x-shared-secret': 'support2024'
+        },
+        timeout: 8000
+    }, function (res) {
+        var data = '';
+        res.on('data', function (c) { data += c; });
+        res.on('end', function () {
+            var body;
+            try { body = JSON.parse(data); }
+            catch (e) { return cb(new Error('plant response unparseable (HTTP ' + res.statusCode + '): ' + String(data).substring(0, 200))); }
+            if (res.statusCode !== 200 || body.success !== true) {
+                return cb(new Error('plant endpoint refused (HTTP ' + res.statusCode + '): ' + (body.message || String(data).substring(0, 200))));
+            }
+            var r = (body.results && body.results[0]) || null;
+            if (!r || r.ok !== true) {
+                return cb(new Error('plant failed for ' + personP8 + '/' + targetDir + ': ' + ((r && r.error) || 'no result item')));
+            }
+            cb(null, { planted: true, alreadyExisted: r.alreadyExisted === true, mountReady: r.mountReady === true });
+        });
+    });
+    req.on('error', function (e) { cb(new Error('plant unreachable: ' + e.message)); });
+    req.on('timeout', function () { req.abort(); cb(new Error('plant timeout (8s)')); });
+    req.write(postData);
+    req.end();
 }
 
 // ---------------------------------------------------------------- identity
@@ -324,6 +392,18 @@ function sendInvite(opts, callback) {
                 jrec.upsert(redisClient, 'perportal', [ctx.dataset, p8], 'senath', ops, function (ppErr) {
                     if (ppErr) return done(coded('binding_failed', 'perportal binding failed — send aborted (the email would promise access never granted): ' + ppErr.message));
                     result.bound = true;
+                    // SELF-INVITE PLANTS AT SEND (George 2026-08-19): inviter
+                    // == invitee -> the send is the consent; plant the
+                    // person-only symlink NOW, no Accept click. See
+                    // plantSelfLink() above for transport + fail semantics.
+                    var inviterBare = String(opts.inviterProstan8 || '').replace(/^u_/, '');
+                    if (inviterBare && p8 === inviterBare) {
+                        return plantSelfLink(p8, String(companyId), function (plErr, plant) {
+                            if (plErr) return done(coded('binding_failed', 'self-invite symlink plant failed — send aborted (the email would promise a portal the person cannot see): ' + plErr.message));
+                            result.selfPlant = plant;   // { planted, alreadyExisted, mountReady }
+                            next();
+                        });
+                    }
                     next();
                 });
             }

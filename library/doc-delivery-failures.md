@@ -168,3 +168,38 @@ GOTCHAS LEARNED WIRING IT:
     guessing.
   - SES mailbox simulator (success@/bounce@simulator.amazonses.com) tests
     the full chain without touching reputation or real customers.
+
+=== STUCK i_padate.exe PILE-UP — SENDS STAY DRAFT + PRINTS DIE (added gen-17, 2026-09-01) ===
+
+Measured live on WILLIS/Hawk, 2026-09-01. Symptom pair, always together:
+  - document Send from the Documents panel leaves the doc in DRAFT
+    (users retry -> duplicate drafts stack up in the activity feed, e.g.
+    five "passing" drafts at 12:33x2 / 12:35x2 / 1:41), AND
+  - invoices will not print.
+
+CAUSE: i_padate.exe (Harbour, source willdev/i_padate.prg) fires per
+document action to stamp ORDHEAD.adate for the load. It net_use()'s
+ORDHEAD.DBF with a lock-wait. During maintenance that holds ORDHEAD
+(George's GL window, Apache bounced), each user attempt spawns an
+i_padate that hangs waiting — they pile up as SYSTEM processes and then
+HOLD the locks themselves, wedging every later print/send EVEN AFTER
+the maintenance ends and services are back.
+
+DIAGNOSIS (30 seconds): Task Manager on the prey -> multiple
+i_padate.exe rows under SYSTEM (~2.2MB each). More than one is wrong.
+Also check error.log in the dataset dir — i_padate appends
+"I_padate error: ..." on Break.
+
+FIX: kill ALL i_padate.exe instances. Chain resumes immediately —
+proven by George 2026-09-01 ("killed them all and now it works").
+The piled-up DRAFTs are harmless retry artifacts; user sends ONCE and
+it flips to SENT.
+
+PREVENTION: after any maintenance window that touches ORDHEAD / bounces
+Apache on a prey, sweep Task Manager for i_padate.exe stragglers before
+declaring the window closed.
+
+TRIAGE ORDER NOTE: this failure LOOKS like "Apache is down" (the doc
+chain dies the same way). Check for the pile-up FIRST — killing strays
+is cheaper than a service bounce, and the pile-up survives the service
+coming back.
