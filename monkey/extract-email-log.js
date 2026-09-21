@@ -76,6 +76,16 @@ function arg(name, fallback) {
 var DAYS = parseInt(arg('days', '30'), 10);
 var OUT_DIR = arg('out', 'D:/clients/senath/data/emaillog');
 
+// --merge: NARROW-window refresh mode (the Sent-page Refresh button, via
+// serenada's gorilla mount — senath-extract-gorilla.js spawns this file with
+// --days 1 --merge). Instead of REWRITING each <DATASET>.json with only this
+// window's messages (which would clobber the 30-day history the schtask
+// maintains), messages are UPSERTED by messageId into the existing file:
+// new messages appear, existing ones get their newer events/status. The
+// full-sweep schtask remains the reconciliation authority. Measured
+// 2026-09-21: 30d sweep ~80s, 1d sweep ~2s — that gap is why this exists.
+var MERGE = process.argv.indexOf('--merge') !== -1;
+
 // Hard ceiling on messages per dataset file (prosser gen-2 audit, 2026-07-22).
 // Reggi reads these files SYNCHRONOUSLY on the request path and is
 // single-threaded and shared — an unbounded file would stall all 28 of his
@@ -369,6 +379,29 @@ function writeJson(file, obj) {
   fs.renameSync(tmp, file);          // atomic-ish: a reader never sees a half file
 }
 
+function readJsonSafe(file) {
+  try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch (e) { return null; }
+}
+
+// Merge a narrow window's messages into an existing dataset file's messages.
+// Upsert by messageId — the fresh copy wins (it groups the newest events).
+// Messages without an id (should not happen — SES always assigns one) are
+// appended rather than dropped, so nothing silently vanishes.
+function mergeMessages(existingMsgs, freshMsgs) {
+  var byId = {}, order = [];
+  (existingMsgs || []).forEach(function (m) {
+    var k = m.messageId || ('noid:' + (m.time || '') + ':' + (m.recipient || ''));
+    if (!byId[k]) order.push(k);
+    byId[k] = m;
+  });
+  freshMsgs.forEach(function (m) {
+    var k = m.messageId || ('noid:' + (m.time || '') + ':' + (m.recipient || ''));
+    if (!byId[k]) order.push(k);
+    byId[k] = m;                     // fresh wins: same window re-read, more events
+  });
+  return order.map(function (k) { return byId[k]; });
+}
+
 function main() {
   var startMs = Date.now() - DAYS * 86400000;
   var windowStart = new Date(startMs).toISOString();
@@ -414,6 +447,18 @@ function main() {
     Object.keys(byDataset).forEach(function (ds) {
       var msgs = byDataset[ds].sort(function (a, b) { return a.time < b.time ? 1 : -1; });
 
+      // MERGE mode: upsert this narrow window into the existing file instead
+      // of clobbering the full-window history. Window metadata stays the
+      // EXISTING file's (it still describes the full sweep's span).
+      var existing = MERGE ? readJsonSafe(path.join(OUT_DIR, ds + '.json')) : null;
+      var fileWindowStart = windowStart, fileDays = DAYS;
+      if (existing) {
+        msgs = mergeMessages(existing.messages, msgs)
+          .sort(function (a, b) { return a.time < b.time ? 1 : -1; });
+        fileWindowStart = existing.windowStart || windowStart;
+        fileDays = existing.days || DAYS;
+      }
+
       // Counts are taken over the FULL window before capping, so the totals a
       // user sees describe reality, not the slice we kept.
       var companies = {};
@@ -432,8 +477,9 @@ function main() {
       writeJson(path.join(OUT_DIR, ds + '.json'), {
         dataset: ds,
         generatedAt: generatedAt,
-        windowStart: windowStart,
-        days: DAYS,
+        windowStart: fileWindowStart,
+        days: fileDays,
+        lastRefresh: MERGE ? { at: generatedAt, narrowDays: DAYS } : undefined,
         counts: counts,
         companies: companies,
         // Stated on the page, not buried. The log itself begins 2026-07-14;
@@ -464,6 +510,19 @@ function main() {
             'and are deliberately out of scope. Excluded count is reported so ' +
             'the gap is visible rather than silent.'
     };
+    if (MERGE) {
+      // A narrow window only touches datasets with fresh traffic. Rebuild the
+      // index from DISK so untouched datasets are never dropped from it.
+      index.mode = 'merge';
+      index.datasets = fs.readdirSync(OUT_DIR).filter(function (f) {
+        return /\.json$/.test(f) && f !== '_index.json' && !/\.tmp$/.test(f);
+      }).map(function (f) {
+        var d = readJsonSafe(path.join(OUT_DIR, f)) || {};
+        return { dataset: d.dataset || f.replace(/\.json$/, ''),
+                 messages: (d.messages || []).length,
+                 companies: Object.keys(d.companies || {}).length };
+      });
+    }
     writeJson(path.join(OUT_DIR, '_index.json'), index);
 
     console.log('raw events:              ' + raw.length);
