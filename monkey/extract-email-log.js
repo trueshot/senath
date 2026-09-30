@@ -382,6 +382,35 @@ function writeJson(file, obj) {
   fs.renameSync(tmp, file);          // atomic-ish: a reader never sees a half file
 }
 
+// Archive of messages evicted from a dataset's working file by the cap.
+// OUT_DIR/archive/<DATASET>.json = { dataset, updatedAt, messages: {id: msg} }.
+// A SUBDIRECTORY on purpose: the index rebuild treats every *.json in OUT_DIR
+// as a dataset, and Reggi reads only OUT_DIR/<DATASET>.json — neither sees
+// this. Keyed by messageId, so a message evicted on every tick (a dataset
+// over the cap inside the sweep window) is stored once, newest copy wins.
+// Retrievable on request by reading the file; not served by any route today.
+// Non-fatal: an archive failure is logged and the sweep continues — but it is
+// LOUD, because a failure here means eviction without a copy.
+function archiveMessages(ds, evicted) {
+  if (!evicted || !evicted.length) return;
+  try {
+    var dir = path.join(OUT_DIR, 'archive');
+    ensureDir(dir);
+    var file = path.join(dir, ds + '.json');
+    var arch = readJsonSafe(file) || { dataset: ds, messages: {} };
+    evicted.forEach(function (m) {
+      var k = m.messageId || ('noid:' + (m.time || '') + ':' + (m.to || ''));
+      arch.messages[k] = m;
+    });
+    arch.updatedAt = new Date().toISOString();
+    arch.count = Object.keys(arch.messages).length;
+    writeJson(file, arch);
+    console.log('  ' + ds + ': archived ' + evicted.length + ' evicted messages (archive total ' + arch.count + ')');
+  } catch (e) {
+    console.error('  ' + ds + ': ARCHIVE FAILED — ' + evicted.length + ' messages evicted WITHOUT a copy: ' + e.message);
+  }
+}
+
 function readJsonSafe(file) {
   try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch (e) { return null; }
 }
@@ -479,6 +508,10 @@ function main() {
       var totalInWindow = msgs.length;
       var truncated = totalInWindow > MAX_PER_DATASET;
       if (truncated) {
+        // ARCHIVE, never delete (prospect PM, 2026-09-30): the Sent log is
+        // proof of sending — what a customer reaches for in a PACA/payment
+        // dispute. Messages past the working-set cap move to archive/.
+        archiveMessages(ds, msgs.slice(MAX_PER_DATASET));
         msgs = msgs.slice(0, MAX_PER_DATASET);   // newest first — keep the recent end
         console.log('  ' + ds + ': capped ' + totalInWindow + ' -> ' + MAX_PER_DATASET +
                     ' messages (reported as truncated)');
@@ -504,8 +537,8 @@ function main() {
           truncated: truncated,
           truncationNote: truncated
             ? ('Showing the most recent ' + MAX_PER_DATASET + ' of ' + totalInWindow +
-               ' messages in this window. Older messages exist and were not dropped ' +
-               'from the log — only from this file. Widen with --max or narrow --days.')
+               ' messages. Older messages were moved to the archive, not deleted — ' +
+               'available on request.')
             : null
         },
         messages: msgs
