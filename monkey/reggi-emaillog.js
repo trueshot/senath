@@ -101,6 +101,13 @@ function getMessages(opts) {
   if (opts.status) {
     msgs = msgs.filter(function (m) { return m.status === opts.status; });
   }
+  // doctype=invite (nashville's legacy-user picker, 2026-09-30): filter
+  // BEFORE the limit so invite rows are never lost behind the 500 cap of
+  // ordinary document sends. Exact match, case-insensitive.
+  if (opts.doctype) {
+    var dt = String(opts.doctype).toLowerCase();
+    msgs = msgs.filter(function (m) { return String(m.doctype || '').toLowerCase() === dt; });
+  }
   if (opts.q) {
     var q = String(opts.q).toLowerCase();
     msgs = msgs.filter(function (m) {
@@ -183,6 +190,7 @@ router.get('/:dataset', safe(function (req, res) {
     company: req.query.company,
     load: req.query.load,
     status: req.query.status,
+    doctype: req.query.doctype,
     q: req.query.q,
     days: req.query.days,
     limit: req.query.limit
