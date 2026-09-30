@@ -82,7 +82,10 @@ var OUT_DIR = arg('out', 'D:/clients/senath/data/emaillog');
 // window's messages (which would clobber the 30-day history the schtask
 // maintains), messages are UPSERTED by messageId into the existing file:
 // new messages appear, existing ones get their newer events/status. The
-// full-sweep schtask remains the reconciliation authority. Measured
+// full-sweep schtask remains the reconciliation authority for its 30-day
+// window. ★ As of 2026-09-30 the full sweep ALSO upserts (never rewrites) —
+// see the per-dataset write below; --merge now only means 'narrow refresh'
+// (index.mode + lastRefresh). Measured
 // 2026-09-21: 30d sweep ~80s, 1d sweep ~2s — that gap is why this exists.
 var MERGE = process.argv.indexOf('--merge') !== -1;
 
@@ -447,16 +450,23 @@ function main() {
     Object.keys(byDataset).forEach(function (ds) {
       var msgs = byDataset[ds].sort(function (a, b) { return a.time < b.time ? 1 : -1; });
 
-      // MERGE mode: upsert this narrow window into the existing file instead
-      // of clobbering the full-window history. Window metadata stays the
-      // EXISTING file's (it still describes the full sweep's span).
-      var existing = MERGE ? readJsonSafe(path.join(OUT_DIR, ds + '.json')) : null;
+      // EVERY sweep now UPSERTS into the existing file — full and narrow
+      // alike (senath gen-18, 2026-09-30). Before this, the full 30-day
+      // schtask sweep REWROTE the file, so the log was a ROLLING 30 days
+      // (observed: WILLIS 424 -> 414 while sending daily) — the same horizon
+      // as jrec:invite, which broke prospect's 'invited on <date>' decision.
+      // Now: messages inside the sweep window get fresh events/status (fresh
+      // copy wins); messages older than the window are KEPT at their
+      // last-known status. The 5000/dataset cap below still bounds the file
+      // for Reggi's synchronous read (prosser's audit) — newest first.
+      var existing = readJsonSafe(path.join(OUT_DIR, ds + '.json'));
       var fileWindowStart = windowStart, fileDays = DAYS;
       if (existing) {
         msgs = mergeMessages(existing.messages, msgs)
           .sort(function (a, b) { return a.time < b.time ? 1 : -1; });
-        fileWindowStart = existing.windowStart || windowStart;
-        fileDays = existing.days || DAYS;
+        // The file now spans from the EARLIEST window it has ever covered.
+        if (existing.windowStart && existing.windowStart < windowStart) fileWindowStart = existing.windowStart;
+        fileDays = Math.max(existing.days || 0, DAYS);
       }
 
       // Counts are taken over the FULL window before capping, so the totals a
@@ -510,10 +520,11 @@ function main() {
             'and are deliberately out of scope. Excluded count is reported so ' +
             'the gap is visible rather than silent.'
     };
-    if (MERGE) {
-      // A narrow window only touches datasets with fresh traffic. Rebuild the
-      // index from DISK so untouched datasets are never dropped from it.
-      index.mode = 'merge';
+    index.mode = MERGE ? 'merge' : 'full';
+    {
+      // Any sweep only touches datasets with traffic in ITS window, and files
+      // now accumulate — so rebuild the index from DISK every time, never
+      // dropping a dataset that was quiet this window.
       index.datasets = fs.readdirSync(OUT_DIR).filter(function (f) {
         return /\.json$/.test(f) && f !== '_index.json' && !/\.tmp$/.test(f);
       }).map(function (f) {
